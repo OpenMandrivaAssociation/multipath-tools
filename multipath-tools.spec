@@ -13,6 +13,7 @@ BuildRequires:	libdevmapper-devel
 BuildRequires:  libsysfs-devel
 BuildRequires:  readline-devel
 BuildRequires:  ncurses-devel
+BuildRequires:  libaio-devel
 Requires(preun):rpm-helper
 Requires(post):	rpm-helper
 
