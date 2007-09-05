@@ -2,8 +2,8 @@ Name:         multipath-tools
 URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
-Version:      0.4.7
-Release:      %mkrel 5
+Version:      0.4.8
+Release:      %mkrel 1
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
