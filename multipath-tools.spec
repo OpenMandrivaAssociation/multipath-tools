@@ -64,8 +64,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHOR COPYING README ChangeLog 
 %config(noreplace) /etc/init.d/multipathd
 %config(noreplace) /etc/udev/rules.d/multipath.rules
+/etc/udev/rules.d/kpartx.rules
+/lib/udev/kpartx_id
 /sbin/*
-%_mandir/man8/*
-/sbin/multipathd
+%_mandir/man?/*
 
 
