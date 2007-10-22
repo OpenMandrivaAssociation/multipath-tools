@@ -7,6 +7,7 @@ Release:      %mkrel 1
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
+Patch0:		  multipath-tools-fix-build.patch
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 Requires:     dmsetup
 BuildRequires:	libdevmapper-devel
@@ -35,6 +36,7 @@ are:
 
 %prep
 %setup -q
+%patch0 -p0
 
 %build
 # parallel build support is broken:
