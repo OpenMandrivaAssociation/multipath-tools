@@ -3,7 +3,7 @@ URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
 Version:      0.4.8
-Release:      %mkrel 3
+Release:      %mkrel 4
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
@@ -48,6 +48,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 rm -rf $RPM_BUILD_ROOT/etc/hotplug.d
 mkdir -p $RPM_BUILD_ROOT/etc/init.d
 bzip2 -dc %{SOURCE1} > $RPM_BUILD_ROOT/etc/init.d/multipathd
+chmod 755 $RPM_BUILD_ROOT/etc/init.d/multipathd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
