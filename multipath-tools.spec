@@ -62,7 +62,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,755)
-%doc AUTHOR COPYING README ChangeLog 
+%doc AUTHOR COPYING README* ChangeLog FAQ multipath.conf.*
 %config(noreplace) /etc/init.d/multipathd
 %config(noreplace) /etc/udev/rules.d/multipath.rules
 /etc/udev/rules.d/kpartx.rules
