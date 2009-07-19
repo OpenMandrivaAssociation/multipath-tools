@@ -3,14 +3,14 @@ URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
 Version:      0.4.8
-Release:      %mkrel 6
+Release:      %mkrel 7
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
 Patch0:	      multipath-tools-fix-build.patch
 # Fedora patches
 Patch1:       uevent_fix.patch
-# Fix scsi_id usage
+# Fix scsi_id usage, actually not the Fedora patch
 Patch8:       scsi_id_change.patch
 Patch10:      fix_devt.patch
 Patch12:      binding_error.patch
