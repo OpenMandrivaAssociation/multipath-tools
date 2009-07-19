@@ -3,11 +3,21 @@ URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
 Version:      0.4.8
-Release:      %mkrel 5
+Release:      %mkrel 6
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
-Patch0:		  multipath-tools-fix-build.patch
+Patch0:	      multipath-tools-fix-build.patch
+# Fedora patches
+Patch1:       uevent_fix.patch
+# Fix scsi_id usage
+Patch8:       scsi_id_change.patch
+Patch10:      fix_devt.patch
+Patch12:      binding_error.patch
+# Fix kpartx extended partition handling
+Patch13:      fix_kpartx.patch
+# Fix insecure permissions on multipathd.sock (CVE-2009-0115)
+Patch14:      fix_umask.patch
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 Requires:     dmsetup
 BuildRequires:	libdevmapper-devel
@@ -37,6 +47,13 @@ are:
 %prep
 %setup -q
 %patch0 -p0
+
+%patch1 -p1 -b .uevent_fix
+%patch8 -p1 -b .scsi_id_change
+%patch10 -p1 -b .fix_devt
+%patch12 -p1 -b .binding_error
+%patch13 -p1 -b .ext_part
+%patch14 -p1 -b .umask
 
 %build
 # parallel build support is broken:
