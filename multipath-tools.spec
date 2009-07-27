@@ -46,7 +46,7 @@ are:
 
 %package -n kpartx
 Summary: Partition device manager for device-mapper devices
-Group: System Environment/Base
+Group: System/Kernel and hardware
 Provides: kpartx = %{version}-%{release}
 
 %description -n kpartx
