@@ -3,7 +3,7 @@ URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
 Version:      0.4.8
-Release:      %mkrel 9
+Release:      %mkrel 10
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
@@ -47,8 +47,7 @@ are:
 %package -n kpartx
 Summary: Partition device manager for device-mapper devices
 Group: System/Kernel and hardware
-Provides: kpartx = %{version}-%{release}
-
+Conflicts: multipath-tools < 0.4.8-9
 %description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
