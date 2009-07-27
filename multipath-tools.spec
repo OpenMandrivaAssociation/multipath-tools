@@ -48,6 +48,7 @@ are:
 Summary: Partition device manager for device-mapper devices
 Group: System/Kernel and hardware
 Conflicts: multipath-tools < 0.4.8-9
+
 %description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
