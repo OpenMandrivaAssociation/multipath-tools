@@ -3,11 +3,13 @@ URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
 Version:      0.4.8
-Release:      %mkrel 11
+Release:      %mkrel 12
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
 Patch0:	      multipath-tools-fix-build.patch
+Patch20:      multipath-tools-0.4.8-fix_make_install.patch
+
 # Fedora patches
 Patch1:       uevent_fix.patch
 # Fix scsi_id usage, actually not the Fedora patch
@@ -62,6 +64,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 %patch12 -p1 -b .binding_error
 %patch13 -p1 -b .ext_part
 %patch14 -p1 -b .umask
+%patch20 -p1 -b .install
 
 %build
 # parallel build support is broken:
