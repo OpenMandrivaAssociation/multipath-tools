@@ -3,7 +3,7 @@ URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
 Version:      0.4.8
-Release:      %mkrel 14
+Release:      %mkrel 15
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
@@ -22,6 +22,7 @@ Patch13:      fix_kpartx.patch
 Patch14:      fix_umask.patch
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 Requires:     dmsetup
+Requires:     kpartx = %{version}
 BuildRequires:	libdevmapper-devel
 BuildRequires:  libsysfs-devel
 BuildRequires:  readline-devel
@@ -49,7 +50,7 @@ are:
 %package -n kpartx
 Summary: Partition device manager for device-mapper devices
 Group: System/Kernel and hardware
-Conflicts: multipath-tools < 0.4.8-9
+Conflicts: multipath-tools < 0.4.8-15
 
 %description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
@@ -95,8 +96,13 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/udev/rules.d/multipath.rules
 /etc/udev/rules.d/kpartx.rules
 /lib/udev/kpartx_id
-/sbin/*
-%_mandir/man?/*
+/sbin/devmap_name
+/sbin/mpath_prio_*
+/sbin/multipath
+/sbin/multipathd
+%_mandir/man?/devmap_name*
+%_mandir/man?/mpath_prio_*
+%_mandir/man?/multipath*
 
 %files -n kpartx
 %defattr(-,root,root,-)
