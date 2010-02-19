@@ -20,6 +20,8 @@ Patch12:      binding_error.patch
 Patch13:      fix_kpartx.patch
 # Fix insecure permissions on multipathd.sock (CVE-2009-0115)
 Patch14:      fix_umask.patch
+# fix kpartx udev rule for dmraid
+Patch15:      fix-kpartx-udev-rules-for-dmraid.patch
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 Requires:     dmsetup
 Requires:     kpartx = %{version}
@@ -66,6 +68,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 %patch12 -p1 -b .binding_error
 %patch13 -p1 -b .ext_part
 %patch14 -p1 -b .umask
+%patch15 -p1 -b .kpartx_udev
 %patch20 -p1 -b .install
 
 %build
