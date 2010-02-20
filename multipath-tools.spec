@@ -3,7 +3,7 @@ URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
 Version:      0.4.8
-Release:      %mkrel 16
+Release:      %mkrel 17
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
@@ -24,6 +24,8 @@ Patch14:      fix_umask.patch
 Patch15:      fix-kpartx-udev-rules-for-dmraid.patch
 # kpartx: use current name of the device node
 Patch16:      multipath-tools-Use-current-name-of-the-device-node.patch
+# kpartx: deal with more than 256 minor numbers
+Patch17:      kpartx-make-kpartx-deal-with-more-than-256-minor-numbers.patch
 
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 Requires:     dmsetup
@@ -73,6 +75,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 %patch14 -p1 -b .umask
 %patch15 -p1 -b .kpartx_udev
 %patch16 -p1 -b .node_name
+%patch17 -p1 -b .minor_numbers
 %patch20 -p1 -b .install
 
 %build
