@@ -22,6 +22,9 @@ Patch13:      fix_kpartx.patch
 Patch14:      fix_umask.patch
 # fix kpartx udev rule for dmraid
 Patch15:      fix-kpartx-udev-rules-for-dmraid.patch
+# kpartx: use current name of the device node
+Patch16:      multipath-tools-Use-current-name-of-the-device-node.patch
+
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 Requires:     dmsetup
 Requires:     kpartx = %{version}
@@ -69,6 +72,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 %patch13 -p1 -b .ext_part
 %patch14 -p1 -b .umask
 %patch15 -p1 -b .kpartx_udev
+%patch16 -p1 -b .node_name
 %patch20 -p1 -b .install
 
 %build
