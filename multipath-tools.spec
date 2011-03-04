@@ -3,12 +3,14 @@ URL:          http://christophe.varoqui.free.fr/multipath-tools/
 License:      GPL
 Group:        System/Kernel and hardware
 Version:      0.4.8
-Release:      %mkrel 18
+Release:      %mkrel 19
 Summary:      Tools to manage multipathed devices with the device-mapper
 Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
 Source1:      multipathd.init.bz2
 Patch0:	      multipath-tools-fix-build.patch
 Patch20:      multipath-tools-0.4.8-fix_make_install.patch
+# (bor) send udev event for block devices only (upstream)
+Patch21:      multipath-tools-0.4.8-send-udev-event-for-block-only.patch
 
 # Fedora patches
 Patch1:       uevent_fix.patch
@@ -77,6 +79,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 %patch16 -p1 -b .node_name
 %patch17 -p1 -b .minor_numbers
 %patch20 -p1 -b .install
+%patch21 -p1 -b .udev_subsys_block
 
 %build
 # parallel build support is broken:
