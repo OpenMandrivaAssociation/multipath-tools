@@ -86,15 +86,15 @@ kpartx manages partition creation and removal for device-mapper devices.
 make BUILD="glibc"
 
 %install
-rm -fR $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT install
-rm -rf $RPM_BUILD_ROOT/etc/hotplug.d
-mkdir -p $RPM_BUILD_ROOT/etc/init.d
-bzip2 -dc %{SOURCE1} > $RPM_BUILD_ROOT/etc/init.d/multipathd
-chmod 755 $RPM_BUILD_ROOT/etc/init.d/multipathd
+rm -fR %{buildroot}
+make DESTDIR=%{buildroot} install
+rm -rf %{buildroot}/etc/hotplug.d
+mkdir -p %{buildroot}/etc/init.d
+bzip2 -dc %{SOURCE1} > %{buildroot}/etc/init.d/multipathd
+chmod 755 %{buildroot}/etc/init.d/multipathd
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %preun
 %_preun_service multipathd
