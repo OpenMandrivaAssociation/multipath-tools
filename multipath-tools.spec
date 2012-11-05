@@ -6,7 +6,7 @@ Version:	0.4.9
 Release:	1
 Summary:	Tools to manage multipathed devices with the device-mapper
 Source0:	http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.xz
-Source1:	multipathd.init.bz2
+Source1:	multipathd.init
 Patch0:		multipath-tools-fix-build.patch
 Patch20:	multipath-tools-0.4.8-fix_make_install.patch
 # (bor) send udev event for block devices only (upstream)
@@ -87,16 +87,13 @@ make BUILD="glibc"
 %install
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}/etc/hotplug.d
-mkdir -p %{buildroot}/etc/init.d
-bzip2 -dc %{SOURCE1} > %{buildroot}/etc/init.d/multipathd
-chmod 755 %{buildroot}/etc/init.d/multipathd
+install -m755 %{SOURCE1} -D %{buildroot}/etc/init.d/multipathd
 
 %preun
 %_preun_service multipathd
 
 %post
 %_post_service multipathd
-
 
 %files
 %doc AUTHOR COPYING README* ChangeLog FAQ multipath.conf.*
