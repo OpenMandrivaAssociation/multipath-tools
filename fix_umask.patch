@@ -1,0 +1,17 @@
+--- multipath-tools.old/multipathd/main.c	2009-04-02 12:22:37.000000000 +0200
++++ multipath-tools/multipathd/main.c	2009-04-02 12:25:13.000000000 +0200
+@@ -718,6 +718,7 @@ uxlsnrloop (void * ap)
+ 	set_handler_callback(REINSTATE+PATH, cli_reinstate);
+ 	set_handler_callback(FAIL+PATH, cli_fail);
+ 
++	umask(077);
+ 	uxsock_listen(&uxsock_trigger, ap);
+ 
+ 	return NULL;
+@@ -1436,7 +1437,6 @@ daemonize(void)
+ 	close(in_fd);
+ 	close(out_fd);
+ 	chdir("/");
+-	umask(0);
+ 	return 0;
+ }

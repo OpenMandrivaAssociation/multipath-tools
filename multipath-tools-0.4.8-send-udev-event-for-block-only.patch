@@ -1,0 +1,8 @@
+--- multipath-tools-0.4.8/multipath/multipath.rules.udev_subsys_block	2007-08-03 01:05:37.000000000 +0400
++++ multipath-tools-0.4.8/multipath/multipath.rules	2011-03-04 19:31:56.000000000 +0300
+@@ -4,4 +4,4 @@
+ #
+ 
+ # socket for uevents
+-RUN+="socket:/org/kernel/dm/multipath_event"
++SUBSYSTEM=="block", RUN+="socket:/org/kernel/dm/multipath_event"
