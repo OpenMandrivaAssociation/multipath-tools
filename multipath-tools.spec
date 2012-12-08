@@ -1,42 +1,43 @@
-Name:		multipath-tools
-URL:		http://christophe.varoqui.free.fr/multipath-tools/
-License:	GPL
-Group:		System/Kernel and hardware
-Version:	0.4.9
-Release:	1
-Summary:	Tools to manage multipathed devices with the device-mapper
-Source0:	http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.xz
-Source1:	multipathd.init
-Patch0:		multipath-tools-fix-build.patch
-Patch20:	multipath-tools-0.4.8-fix_make_install.patch
+Name:         multipath-tools
+URL:          http://christophe.varoqui.free.fr/multipath-tools/
+License:      GPL
+Group:        System/Kernel and hardware
+Version:      0.4.8
+Release:      %mkrel 22
+Summary:      Tools to manage multipathed devices with the device-mapper
+Source:       http://christophe.varoqui.free.fr/multipath-tools/%name-%version.tar.bz2
+Source1:      multipathd.init.bz2
+Patch0:	      multipath-tools-fix-build.patch
+Patch20:      multipath-tools-0.4.8-fix_make_install.patch
 # (bor) send udev event for block devices only (upstream)
-Patch21:	multipath-tools-0.4.8-send-udev-event-for-block-only.patch
+Patch21:      multipath-tools-0.4.8-send-udev-event-for-block-only.patch
 
 # Fedora patches
-Patch1:		uevent_fix.patch
+Patch1:       uevent_fix.patch
 # Fix scsi_id usage, actually not the Fedora patch
-Patch8:		scsi_id_change.patch
-Patch10:	fix_devt.patch
-Patch12:	binding_error.patch
+Patch8:       scsi_id_change.patch
+Patch10:      fix_devt.patch
+Patch12:      binding_error.patch
 # Fix kpartx extended partition handling
-Patch13:	fix_kpartx.patch
+Patch13:      fix_kpartx.patch
 # Fix insecure permissions on multipathd.sock (CVE-2009-0115)
-Patch14:	fix_umask.patch
+Patch14:      fix_umask.patch
 # fix kpartx udev rule for dmraid
-Patch15:	fix-kpartx-udev-rules-for-dmraid.patch
+Patch15:      fix-kpartx-udev-rules-for-dmraid.patch
 # kpartx: use current name of the device node
-Patch16:	multipath-tools-Use-current-name-of-the-device-node.patch
+Patch16:      multipath-tools-Use-current-name-of-the-device-node.patch
 # kpartx: deal with more than 256 minor numbers
-Patch17:	kpartx-make-kpartx-deal-with-more-than-256-minor-numbers.patch
+Patch17:      kpartx-make-kpartx-deal-with-more-than-256-minor-numbers.patch
 
-Requires:	dmsetup
-Requires:	kpartx = %{version}
-Conflicts:	kpartx < 0.4.8-16
+BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+Requires:     dmsetup
+Requires:     kpartx = %{version}
+Conflicts:    kpartx < 0.4.8-16
 BuildRequires:	libdevmapper-devel
-BuildRequires:	libsysfs-devel
-BuildRequires:	readline-devel
-BuildRequires:	ncurses-devel
-BuildRequires:	libaio-devel
+BuildRequires:  sysfsutils-devel
+BuildRequires:  readline-devel
+BuildRequires:  ncurses-devel
+BuildRequires:  libaio-devel
 Requires(preun):rpm-helper
 Requires(post):	rpm-helper
 
@@ -56,38 +57,44 @@ are:
 - kpartx: maps linear devmaps upon device partitions, which makes
   multipath maps partionable
 
-%package -n	kpartx
-Summary:	Partition device manager for device-mapper devices
-Group:		System/Kernel and hardware
-Conflicts:	multipath-tools < 0.4.8-16
+%package -n kpartx
+Summary: Partition device manager for device-mapper devices
+Group: System/Kernel and hardware
+Conflicts: multipath-tools < 0.4.8-16
 
-%description -n	kpartx
+%description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
 %prep
 %setup -q
-#patch0 -p0
+%patch0 -p0
 
-#patch1 -p1 -b .uevent_fix
-#patch8 -p1 -b .scsi_id_change
-#patch10 -p1 -b .fix_devt
-#patch12 -p1 -b .binding_error
-#patch13 -p1 -b .ext_part
-#patch14 -p1 -b .umask
-#patch15 -p1 -b .kpartx_udev
-#patch16 -p1 -b .node_name
-#patch17 -p1 -b .minor_numbers
-#patch20 -p1 -b .install
-#patch21 -p1 -b .udev_subsys_block
+%patch1 -p1 -b .uevent_fix
+%patch8 -p1 -b .scsi_id_change
+%patch10 -p1 -b .fix_devt
+%patch12 -p1 -b .binding_error
+%patch13 -p1 -b .ext_part
+%patch14 -p1 -b .umask
+%patch15 -p1 -b .kpartx_udev
+%patch16 -p1 -b .node_name
+%patch17 -p1 -b .minor_numbers
+%patch20 -p1 -b .install
+%patch21 -p1 -b .udev_subsys_block
 
 %build
 # parallel build support is broken:
 make BUILD="glibc"
 
 %install
-make DESTDIR=%{buildroot} install
-rm -rf %{buildroot}/etc/hotplug.d
-install -m755 %{SOURCE1} -D %{buildroot}/etc/init.d/multipathd
+rm -fR $RPM_BUILD_ROOT
+make DESTDIR=$RPM_BUILD_ROOT install
+rm -rf $RPM_BUILD_ROOT/etc/hotplug.d
+mkdir -p $RPM_BUILD_ROOT/etc/init.d
+bzip2 -dc %{SOURCE1} > $RPM_BUILD_ROOT/etc/init.d/multipathd
+chmod 755 $RPM_BUILD_ROOT/etc/init.d/multipathd
+
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %preun
 %_preun_service multipathd
@@ -95,20 +102,149 @@ install -m755 %{SOURCE1} -D %{buildroot}/etc/init.d/multipathd
 %post
 %_post_service multipathd
 
+
 %files
+%defattr(-,root,root,755)
 %doc AUTHOR COPYING README* ChangeLog FAQ multipath.conf.*
 %config(noreplace) /etc/init.d/multipathd
 %config(noreplace) /etc/udev/rules.d/multipath.rules
-#/sbin/devmap_name
-#/sbin/mpath_prio_*
+/sbin/devmap_name
+/sbin/mpath_prio_*
 /sbin/multipath
 /sbin/multipathd
-#%{_mandir}/man?/devmap_name*
-#%{_mandir}/man?/mpath_prio_*
-%{_mandir}/man?/multipath*
+%_mandir/man?/devmap_name*
+%_mandir/man?/mpath_prio_*
+%_mandir/man?/multipath*
 
 %files -n kpartx
+%defattr(-,root,root,-)
 /sbin/kpartx
 /etc/udev/rules.d/kpartx.rules
 /lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8*
+
+
+
+%changelog
+* Wed May 04 2011 Oden Eriksson <oeriksson@mandriva.com> 0.4.8-20mdv2011.0
++ Revision: 666499
+- mass rebuild
+
+* Fri Mar 04 2011 Andrey Borzenkov <arvidjaar@mandriva.org> 0.4.8-19
++ Revision: 641622
+- P21: send multipath event for block device only (upstream)
+
+* Fri Dec 03 2010 Oden Eriksson <oeriksson@mandriva.com> 0.4.8-18mdv2011.0
++ Revision: 606670
+- rebuild
+
+* Sat Feb 20 2010 Thomas Backlund <tmb@mandriva.org> 0.4.8-17mdv2010.1
++ Revision: 508762
+- kpartx: deal with more than 256 minor numbers
+- kpartx.rules: use current name of the device node
+
+* Fri Feb 19 2010 Thomas Backlund <tmb@mandriva.org> 0.4.8-16mdv2010.1
++ Revision: 508452
+- fix kpartx udev rule for dmraid
+- move kpartx.rules and kpartx_id from multipath-tools to kpartx rpm
+
+* Thu Aug 20 2009 Anssi Hannula <anssi@mandriva.org> 0.4.8-15mdv2010.0
++ Revision: 418368
+- fix duplicated files between multipath-tools and kpartx
+- require kpartx in multipath-tools
+
+* Mon Aug 17 2009 Pascal Terjan <pterjan@mandriva.org> 0.4.8-14mdv2010.0
++ Revision: 417272
+- Fix kpartx extended partition handling fix
+
+* Tue Jul 28 2009 Pascal Terjan <pterjan@mandriva.org> 0.4.8-12mdv2010.0
++ Revision: 401386
+- Avoid failure when pp_hp_sw gets installed before other executables
+- Bump release due to misterious build failure
+- Add missing conflict and drop useless provide
+
+* Mon Jul 27 2009 Pascal Terjan <pterjan@mandriva.org> 0.4.8-9mdv2010.0
++ Revision: 400518
+- Fix group of kpartx
+- Split kpartx in a separate package, so that mkinitrd can require only it
+
+* Mon Jul 20 2009 Eugeni Dodonov <eugeni@mandriva.com> 0.4.8-8mdv2010.0
++ Revision: 398031
+- Updated init script to be LSB-compliant.
+
+* Sun Jul 19 2009 Pascal Terjan <pterjan@mandriva.org> 0.4.8-7mdv2010.0
++ Revision: 397455
+- Fix correctly scsi_id usage
+- Add a few fedora patches (#52270, CVE-2009-0115)
+
+* Tue Mar 17 2009 Guillaume Rousse <guillomovitch@mandriva.org> 0.4.8-5mdv2009.1
++ Revision: 356300
+- rebuild for latest readline
+
+* Mon Sep 29 2008 Thierry Vignaud <tv@mandriva.org> 0.4.8-4mdv2009.0
++ Revision: 289765
+- include more doc (per #43925 request)
+- make service executable (#43925)
+- rebuild
+- kill re-definition of %%buildroot on Pixel's request
+
+  + Olivier Blin <oblin@mandriva.com>
+    - restore BuildRoot
+
+* Mon Oct 22 2007 Thierry Vignaud <tv@mandriva.org> 0.4.8-1mdv2008.1
++ Revision: 101331
+- adjust file list
+- patch 0: fix build
+- BuildRequires:  libaio-devel
+- new release
+
+
+* Sat Nov 25 2006 Thierry Vignaud <tvignaud@mandriva.com> 0.4.7-5mdv2007.0
++ Revision: 87151
+- Import multipath-tools
+
+* Sat Nov 25 2006 Thierry Vignaud <tvignaud@mandrakesoft.com> 0.4.7-5mdv2007.1
+- rebuild for libdevmapper
+
+* Mon Jul 03 2006 Emmanuel Andry <eandry@mandriva.org> 0.4.7-4mdv2007.0
+- rebuild for libdevmapper
+
+* Wed May 03 2006 Thierry Vignaud <tvignaud@mandriva.com> 0.4.7-3mdk
+- fix buildrequires (thus fixing x86_64 build with iurt)
+
+* Wed Apr 19 2006 Thierry Vignaud <tvignaud@mandriva.com> 0.4.7-2mdk
+- fix buildrequires
+
+* Fri Mar 31 2006 Thierry Vignaud <tvignaud@mandriva.com> 0.4.7-1mdk
+- new release
+
+* Wed Dec 07 2005 Nicolas Lécureuil <neoclust@mandriva.org> 0.4.6-2mdk
+- Fix BuildRequires
+
+* Wed Nov 16 2005 Thierry Vignaud <tvignaud@mandriva.com> 0.4.6-1mdk
+- new release
+- drop patch 0 (now useless)
+
+* Wed Jun 29 2005 Pascal Terjan <pterjan@mandriva.org> 0.4.2.7-3mdk
+- BuildRequires libdevmapper-devel
+- PreReq -> Requires(post)
+
+* Sat Mar 05 2005 Luca Berra <bluca@vodka.it> 0.4.2.7-2mdk 
+- rebuild for new libdevmapper
+- use a mandrakelinux initscript
+- specfile cleanup
+
+* Thu Jan 20 2005 Thierry Vignaud <tvignaud@mandrakesoft.com> 0.4.2.7-1mdk
+- new release
+- automatically updatable
+- patch 0: fix build
+
+* Thu Dec 23 2004 Thierry Vignaud <tvignaud@mandrakesoft.com> 0.4.2.0-1mdk
+- new release
+
+* Thu Nov 25 2004 Thierry Vignaud <tvignaud@mandrakesoft.com> 0.3.8-1mdk
+- new release
+
+* Fri Nov 05 2004 Thierry Vignaud <tvignaud@mandrakesoft.com> 0.3.6-1mdk
+- initial releaee
+
