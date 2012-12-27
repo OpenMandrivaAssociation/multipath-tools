@@ -11,6 +11,7 @@ Source0:	http://christophe.varoqui.free.fr/multipath-tools/%{name}-%{version}.ta
 Source1:	multipathd.init
 # kpartx: add -u flag, needed by dracut/systemd
 Patch0:		multipath-tools-implement-update-option-for-kpartx.patch
+Patch1:		multipath-tools-0.4.9-whole-program.patch
 
 Requires:	dmsetup
 Requires:	kpartx = %{version}
@@ -59,6 +60,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 %prep
 %setup -q
 %patch0 -p1 -b .kpartx-update~
+%patch1 -p1 -b .wholeprogram~
 
 %if %{with uclibc}
 cp -a kpartx kpartx-uclibc
@@ -66,12 +68,12 @@ cp -a kpartx kpartx-uclibc
 
 %build
 %if %{with uclibc}
-%make -C kpartx-uclibc OPTFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}"
+%make -C kpartx-uclibc OPTFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" WHOLE_PROGRAM=1
 %endif
-%make OPTFLAGS="%{optflags}"
+%make OPTFLAGS="%{optflags}" WHOLE_PROGRAM=1
 
 %install
-%makeinstall_std
+%makeinstall_std WHOLE_PROGRAM=1
 %if %{with uclibc}
 install -m755 kpartx-uclibc/kpartx -D %{buildroot}%{uclibc_root}/sbin/kpartx
 %endif
@@ -108,6 +110,7 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 
 %changelog
 * Thu Dec 27 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1
+- compile kpartx & multipathd with -fwhole-program (P1)
 - do uclibc build of kpartx
 - enable parallel build
 - compile with %%optflags
