@@ -1,3 +1,5 @@
+%bcond_without	uclibc
+
 Name:		multipath-tools
 URL:		http://christophe.varoqui.free.fr/multipath-tools/
 License:	GPLv2
@@ -18,6 +20,9 @@ BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	libaio-devel
+%if %{with uclibc}
+BuildRequires:	uClibc-devel
+%endif
 Requires(preun):rpm-helper
 Requires(post):	rpm-helper
 
@@ -42,15 +47,34 @@ Conflicts:	multipath-tools < 0.4.8-16
 %description -n	kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
+%package -n	uclibc-kpartx
+Summary:	Partition device manager for device-mapper devices (uClibc build)
+Group:		System/Kernel and hardware
+Conflicts:	multipath-tools < 0.4.8-16
+Requires:	kpartx = %{EVRD}
+
+%description -n	uclibc-kpartx
+kpartx manages partition creation and removal for device-mapper devices.
+
 %prep
 %setup -q
 %patch0 -p1 -b .kpartx-update~
 
+%if %{with uclibc}
+cp -a kpartx kpartx-uclibc
+%endif
+
 %build
+%if %{with uclibc}
+%make -C kpartx-uclibc OPTFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}"
+%endif
 %make OPTFLAGS="%{optflags}"
 
 %install
 %makeinstall_std
+%if %{with uclibc}
+install -m755 kpartx-uclibc/kpartx -D %{buildroot}%{uclibc_root}/sbin/kpartx
+%endif
 
 install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 
@@ -77,8 +101,14 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 /lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8*
 
+%if %{with uclibc}
+%files -n uclibc-kpartx
+%{uclibc_root}/sbin/kpartx
+%endif
+
 %changelog
 * Thu Dec 27 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1
+- do uclibc build of kpartx
 - enable parallel build
 - compile with %%optflags
 - drop 'COPYING', it's shipped with common-licenses
