@@ -1,0 +1,73 @@
+#!/bin/bash
+# 
+# multipathd	This starts, stops, and reloads the multipath
+#		daemon to check for failed paths.
+#
+# chkconfig: 2345 15 85
+# description: multipath monitoring
+# config: /etc/multipath.conf
+# pidfile: /var/run/multipathd.pid
+### BEGIN INIT INFO
+# Provides: multipath-tools
+# Default-Start: 3 5
+# Description: Multipath daemon to check for failed paths.
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:$PATH
+RETVAL=0
+
+prog=multipathd
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+usage ()
+{
+    echo "Usage: service $prog {start|stop|status|restart|condrestart}"
+    RETVAL=1
+}
+
+
+start ()
+{
+    [ -e /var/lock/subsys/$prog ] && return 0
+
+    echo -n $"Starting multipath daemon: "
+    daemon $prog
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
+    echo
+}
+
+stop ()
+{
+    echo -n $"Stopping multipath daemon: "
+    killproc $prog
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/run/$prog.pid
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$prog
+    echo
+}
+
+restart ()
+{
+    stop
+    start
+}
+
+condrestart ()
+{
+    [ -e /var/lock/subsys/$prog ] && restart
+}
+
+
+case "$1" in
+    start) start ;;
+    stop) stop ;;
+    status) status $prog ;;
+    restart|reload) restart ;;
+    condrestart) condrestart ;;
+    *) usage ;;
+esac
+
+exit $RETVAL

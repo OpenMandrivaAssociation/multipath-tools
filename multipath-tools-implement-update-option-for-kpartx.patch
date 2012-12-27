@@ -1,0 +1,123 @@
+From: Hannes Reinecke <hare@suse.de>
+Date: Fri, 21 Aug 2009 13:57:55 +0000 (+0200)
+Subject: Implement 'update' option for kpartx
+X-Git-Url: http://git.kernel.org/?p=linux%2Fstorage%2Fmultipath%2Fhare%2Fmultipath-tools.git;a=commitdiff_plain;h=223a44725ce916de4070ceec1b28e213ac593acb
+
+Implement 'update' option for kpartx
+
+Currently kpartx only knows about 'add' or 'remove'; however,
+it should also be invoked when someone had changed the partition
+table. Only in this case it should do a combination of both,
+namely add new partition mappings and remove stale ones.
+Hence an 'update' option is required.
+
+Signed-off-by: Petr Uzel <puzel@novell.com>
+Signed-off-by: Hannes Reinecke <hare@suse.de>
+Rediffed-by: Thomas Backlund <tmb@mageia.org>
+
+---
+
+diff -Nurp multipath-tools-0.4.9/kpartx/kpartx.c multipath-tools-0.4.9-update/kpartx/kpartx.c
+--- multipath-tools-0.4.9/kpartx/kpartx.c	2010-05-22 15:01:58.000000000 +0300
++++ multipath-tools-0.4.9-update/kpartx/kpartx.c	2012-03-06 16:01:42.004025357 +0200
+@@ -48,7 +48,7 @@
+ 
+ struct slice slices[MAXSLICES];
+ 
+-enum action { LIST, ADD, DELETE };
++enum action { LIST, ADD, DELETE, UPDATE };
+ 
+ struct pt {
+ 	char *type;
+@@ -82,7 +82,7 @@ initpts(void)
+ 	addpts("sun", read_sun_pt);
+ }
+ 
+-static char short_opts[] = "ladgvp:t:s";
++static char short_opts[] = "ladgvp:t:su";
+ 
+ /* Used in gpt.c */
+ int force_gpt=0;
+@@ -92,6 +92,7 @@ usage(void) {
+ 	printf("usage : kpartx [-a|-d|-l] [-v] wholedisk\n");
+ 	printf("\t-a add partition devmappings\n");
+ 	printf("\t-d del partition devmappings\n");
++	printf("\t-u update partition devmappings\n");
+ 	printf("\t-l list partitions devmappings that would be added by -a\n");
+ 	printf("\t-p set device name-partition number delimiter\n");
+ 	printf("\t-g force GUID partition table (GPT)\n");
+@@ -256,6 +257,8 @@ main(int argc, char **argv){
+ 			break;
+ 		case 's':
+ 			sync = 1;
++		case 'u':
++			what = UPDATE;
+ 			break;
+ 		default:
+ 			usage();
+@@ -265,7 +268,7 @@ main(int argc, char **argv){
+ 	if (!sync)
+ 		dm_udev_set_sync_support(0);
+ 
+-	if (dm_prereq(DM_TARGET, 0, 0, 0) && (what == ADD || what == DELETE)) {
++	if (dm_prereq(DM_TARGET, 0, 0, 0) && (what == ADD || what == DELETE || what == UPDATE)) {
+ 		fprintf(stderr, "device mapper prerequisites not met\n");
+ 		exit(1);
+ 	}
+@@ -443,6 +446,8 @@ main(int argc, char **argv){
+ 			break;
+ 
+ 		case ADD:
++		case UPDATE:
++			/* ADD and UPDATE share the same code that adds new partitions. */
+ 			for (j = 0, c = 0; j < n; j++) {
+ 				if (slices[j].size == 0)
+ 					continue;
+@@ -559,7 +564,31 @@ main(int argc, char **argv){
+ 				if (d == c)
+ 					break;
+ 			}
+-			break;
++
++			if (what == ADD) {
++				/* Skip code that removes devmappings for deleted partitions */
++				break;
++			}
++
++			for (j = MAXSLICES-1; j >= 0; j--) {
++				if (safe_sprintf(partname, "%s%s%d",
++					     mapname, delim, j+1)) {
++					fprintf(stderr, "partname too small\n");
++					exit(1);
++				}
++				strip_slash(partname);
++
++				if (slices[j].size || !dm_map_present(partname))
++					continue;
++
++				if (!dm_simplecmd(DM_DEVICE_REMOVE,
++						  partname, 1, &cookie)) {
++					r++;
++					continue;
++				}
++				if (verbose)
++					printf("del devmap : %s\n", partname);
++			}
+ 
+ 		default:
+ 			break;
+diff -Nurp multipath-tools-0.4.9/kpartx/kpartx.rules multipath-tools-0.4.9-update/kpartx/kpartx.rules
+--- multipath-tools-0.4.9/kpartx/kpartx.rules	2010-05-22 15:01:58.000000000 +0300
++++ multipath-tools-0.4.9-update/kpartx/kpartx.rules	2012-03-06 15:56:31.193866634 +0200
+@@ -27,9 +27,9 @@ ENV{DM_PART}=="?*", \
+ 
+ # Create dm tables for partitions
+ ENV{DM_STATE}=="ACTIVE", ENV{DM_UUID}=="mpath-*", \
+-        RUN+="/sbin/kpartx -a -p -part /dev/$name"
++        RUN+="/sbin/kpartx -u -p -part /dev/$name"
+ ENV{DM_STATE}=="ACTIVE", ENV{DM_UUID}=="dmraid-*", \
+-        RUN+="/sbin/kpartx -a -p -part /dev/$name"
++        RUN+="/sbin/kpartx -u -p -part /dev/$name"
+ 
+ LABEL="kpartx_end"
+ 
