@@ -47,8 +47,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 %patch0 -p1 -b .kpartx-update~
 
 %build
-# parallel build support is broken:
-make BUILD="glibc" OPTFLAGS="%{optflags}"
+%make BUILD="glibc" OPTFLAGS="%{optflags}"
 
 %install
 %makeinstall_std
@@ -80,6 +79,7 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 
 %changelog
 * Thu Dec 27 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1
+- enable parallel build
 - compile with %%optflags
 - drop 'COPYING', it's shipped with common-licenses
 - cleanups
