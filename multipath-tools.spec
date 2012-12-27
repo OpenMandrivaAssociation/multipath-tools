@@ -31,8 +31,6 @@ are:
 
 - multipathd: wait for maps events, then execs multipath
 
-- devmap-name: provides a meaningful device name to udev for devmaps
-
 - kpartx: maps linear devmaps upon device partitions, which makes
   multipath maps partionable
 
