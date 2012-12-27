@@ -16,7 +16,7 @@ Conflicts:	kpartx < 0.4.8-16
 BuildRequires:	libdevmapper-devel
 BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
-BuildRequires:	ncurses-devel
+BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	libaio-devel
 Requires(preun):rpm-helper
 Requires(post):	rpm-helper
