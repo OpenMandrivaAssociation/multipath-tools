@@ -13,7 +13,7 @@ Patch0:		multipath-tools-implement-update-option-for-kpartx.patch
 Requires:	dmsetup
 Requires:	kpartx = %{version}
 Conflicts:	kpartx < 0.4.8-16
-BuildRequires:	libdevmapper-devel
+BuildRequires:	pkgconfig(devmapper) 
 BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(ncursesw)
