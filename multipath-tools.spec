@@ -47,7 +47,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 %patch0 -p1 -b .kpartx-update~
 
 %build
-%make BUILD="glibc" OPTFLAGS="%{optflags}"
+%make OPTFLAGS="%{optflags}"
 
 %install
 %makeinstall_std
