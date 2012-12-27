@@ -62,7 +62,7 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 %_post_service multipathd
 
 %files
-%doc AUTHOR COPYING README* ChangeLog FAQ multipath.conf.*
+%doc AUTHOR README* ChangeLog FAQ multipath.conf.*
 %config(noreplace) %{_initrddir}/multipathd
 %config(noreplace) %{_sysconfdir}/udev/rules.d/multipath.rules
 /sbin/multipath
@@ -80,6 +80,7 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 
 %changelog
 * Thu Dec 27 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1
+- drop 'COPYING', it's shipped with common-licenses
 - cleanups
 - new version
 
