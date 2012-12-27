@@ -67,7 +67,7 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 %config(noreplace) %{_sysconfdir}/udev/rules.d/multipath.rules
 /sbin/multipath
 /sbin/multipathd
-%_mandir/man?/multipath*
+%{_mandir}/man?/multipath*
 %dir /%{_lib}/multipath/
 /%{_lib}/multipath/*
 /%{_lib}/libmultipath*
