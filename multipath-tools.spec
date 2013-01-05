@@ -5,13 +5,49 @@ URL:		http://christophe.varoqui.free.fr/multipath-tools/
 License:	GPLv2
 Group:		System/Kernel and hardware
 Version:	0.4.9
-Release:	1
+%define	gitdate	20121222
+Release:	1%{?gitdate:.%{gitdate}.1}
 Summary:	Tools to manage multipathed devices with the device-mapper
-Source0:	http://christophe.varoqui.free.fr/multipath-tools/%{name}-%{version}.tar.bz2
+Source0:	http://christophe.varoqui.free.fr/multipath-tools/%{name}-%{version}%{?gitdate:-%{gitdate}}.tar.xz
 Source1:	multipathd.init
 # kpartx: add -u flag, needed by dracut/systemd
-Patch0:		multipath-tools-implement-update-option-for-kpartx.patch
-Patch1:		multipath-tools-0.4.9-whole-program.patch
+#Patch0:		multipath-tools-implement-update-option-for-kpartx.patch
+Patch1:		multipath-tools-0.4.9-20121222-whole-program.patch
+Patch1001:	0001-RH-dont_start_with_no_config.patch
+Patch1002:	0002-RH-multipath.rules.patch
+Patch1003:	0003-RH-Make-build-system-RH-Fedora-friendly.patch
+Patch1004:	0004-RH-multipathd-blacklist-all-by-default.patch
+Patch1005:	0005-RH-add-mpathconf.patch
+Patch1006:	0006-RH-add-find-multipaths.patch
+Patch1007:	0007-RH-add-hp_tur-checker.patch
+Patch1008:	0008-RH-RHEL5-style-partitions.patch
+Patch1009:	0009-RH-dont-remove-map-on-enomem.patch
+Patch1010:	0010-RH-deprecate-uid-gid-mode.patch
+Patch1011:	0011-RH-use-sync-support.patch
+Patch1012:	0012-RH-change-configs.patch
+Patch1013:	0013-RH-kpartx-msg.patch
+Patch1014:	0014-RH-dm_reassign.patch
+Patch1015:	0015-RH-selector_change.patch
+Patch1016:	0016-RH-retain_hwhandler.patch
+# Patch1017:	0017-RH-netapp_config.patch
+Patch1018:	0018-RH-remove-config-dups.patch
+Patch1019:	0019-RH-detect-prio.patch
+Patch1020:	0020-RH-netapp-config.patch
+Patch1021:	0021-RH-fix-oom-adj.patch
+Patch1022:	0022-RHBZ-864368-disable-libdm-failback.patch
+Patch1023:	0023-RHBZ-866291-update-documentation.patch
+Patch1024:	0024-RH-start-multipathd-service-before-lvm.patch
+Patch1025:	0025-RH-fix-systemd-start-order.patch
+Patch1026:	0026-RH-fix-mpathpersist-fns.patch
+Patch1027:	0027-RH-default-partition-delimiters.patch
+Patch1028:	0028-RH-storagetek-config.patch
+Patch1029:	0029-RH-kpartx-retry.patch
+Patch1030:	0030-RH-early-blacklist.patch
+Patch1031:	0031-RHBZ-882060-fix-null-strncmp.patch
+Patch1032:	0032-RH-make-path-fd-readonly.patch
+Patch1033:	0033-RH-dont-disable-libdm-failback-for-sync-case.patch
+Patch1034:	0034-RHBZ-887737-check-for-null-key.patch
+Patch1035:	0035-RHBZ-883981-cleanup-rpmdiff-issues.patch
 
 Requires:	dmsetup
 Requires:	kpartx = %{version}
@@ -58,9 +94,8 @@ Requires:	kpartx = %{EVRD}
 kpartx manages partition creation and removal for device-mapper devices.
 
 %prep
-%setup -q
-%patch0 -p1 -b .kpartx-update~
-%patch1 -p1 -b .wholeprogram~
+%setup -q -n %{name}-%{version}%{?gitdate:-%{gitdate}}
+%apply_patches
 
 %if %{with uclibc}
 cp -a kpartx kpartx-uclibc
@@ -68,17 +103,21 @@ cp -a kpartx kpartx-uclibc
 
 %build
 %if %{with uclibc}
-%make -C kpartx-uclibc OPTFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" WHOLE_PROGRAM=1
+%make -C kpartx-uclibc OPTFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" LIB=%{_lib} WHOLE_PROGRAM=1
 %endif
-%make OPTFLAGS="%{optflags}" WHOLE_PROGRAM=1
+# FIXME: WHOLE_PROGRAM=1
+%make OPTFLAGS="%{optflags}" LIB=%{_lib} #WHOLE_PROGRAM=1
 
 %install
-%makeinstall_std WHOLE_PROGRAM=1
+%makeinstall_std bindir=/sbin syslibdir=/%{_lib} rcdir=%{_initrddir} unitdir=%{_unitdir} libdir=/%{_lib}/multipath #WHOLE_PROGRAM=1
 %if %{with uclibc}
 install -m755 kpartx-uclibc/kpartx -D %{buildroot}%{uclibc_root}/sbin/kpartx
 %endif
 
 install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
+
+# tree fix up
+install -d %{buildroot}%{_sysconfdir}/multipath
 
 %preun
 %_preun_service multipathd
@@ -89,18 +128,23 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 %files
 %doc AUTHOR README* ChangeLog FAQ multipath.conf.*
 %config(noreplace) %{_initrddir}/multipathd
-%config(noreplace) %{_sysconfdir}/udev/rules.d/multipath.rules
+%dir %{_sysconfdir}/multipath
+%{_unitdir}/multipathd.service
+%config /lib/udev/rules.d/62-multipath.rules
 /sbin/multipath
 /sbin/multipathd
+/sbin/mpathconf
+/sbin/mpathpersist
 %{_mandir}/man?/multipath*
+%{_mandir}/man?/mpath*
 %dir /%{_lib}/multipath/
 /%{_lib}/multipath/*
 /%{_lib}/libmultipath*
+/%{_lib}/libmpathpersist.so
+/%{_lib}/libmpathpersist.so.*
 
 %files -n kpartx
 /sbin/kpartx
-%{_sysconfdir}/udev/rules.d/kpartx.rules
-/lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8*
 
 %if %{with uclibc}
@@ -109,6 +153,10 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 %endif
 
 %changelog
+* Sat Jan  5 2013 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1.20121222.1
+- update to latest code from git upstream
+- sync with fedora patches
+
 * Thu Dec 27 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1
 - compile kpartx & multipathd with -fwhole-program (P1)
 - do uclibc build of kpartx

@@ -1,11 +1,10 @@
---- multipath-tools-0.4.9/kpartx/Makefile.wholeprogram~	2012-12-27 07:43:25.015152741 +0100
-+++ multipath-tools-0.4.9/kpartx/Makefile	2012-12-27 07:48:14.216788050 +0100
-@@ -9,13 +9,22 @@ CFLAGS += -I. -D_LARGEFILE64_SOURCE -D_F
+--- multipath-tools-0.4.9-20121222/kpartx/Makefile.0001~	2012-12-22 09:40:59.000000000 +0100
++++ multipath-tools-0.4.9-20121222/kpartx/Makefile	2013-01-05 02:38:39.374455389 +0100
+@@ -15,13 +15,20 @@ endif
  LDFLAGS = -ldevmapper
  OBJS = bsd.o dos.o kpartx.o solaris.o unixware.o dasd.o sun.o \
         gpt.o mac.o crc32.o lopart.o xstrncpy.o devmapper.o
 +SRCS = $(subst .o,.c,$(OBJS))
-+
  EXEC = kpartx
  
  all: $(EXEC)
@@ -19,22 +18,22 @@
 +	$(CC) $(WHOLEFLAGS) $(SRCS) $(CFLAGS) -o $(EXEC) $(LDFLAGS)
 +	$(GZIP) $(EXEC).8 > $(EXEC).8.gz
 +endif
-+
- 	
+ 
  install: $(EXEC) $(EXEC).8
  	$(INSTALL_PROGRAM) -d $(DESTDIR)$(bindir)
---- multipath-tools-0.4.9/Makefile.inc.wholeprogram~	2012-12-27 07:43:54.526524302 +0100
-+++ multipath-tools-0.4.9/Makefile.inc	2012-12-27 07:45:31.094736890 +0100
-@@ -35,6 +35,7 @@ libdir	    = $(prefix)/$(LIB)/multipath
+--- multipath-tools-0.4.9-20121222/Makefile.inc.0001~	2012-12-22 09:40:59.000000000 +0100
++++ multipath-tools-0.4.9-20121222/Makefile.inc	2013-01-05 02:38:57.573714202 +0100
+@@ -38,6 +38,8 @@ mpathpersistdir = $(TOPDIR)/libmpathpers
  GZIP        = /bin/gzip -9 -c
  INSTALL_PROGRAM = install
  
 +WHOLEFLAGS   = -Wl,--no-warn-common -flto -fwhole-program
- OPTFLAGS     = -pipe -g -Wall -Wunused -Wstrict-prototypes
- CFLAGS	     = $(OPTFLAGS) -fPIC -DLIB_STRING=\"${LIB}\"
- SHARED_FLAGS = -shared
---- multipath-tools-0.4.9/multipathd/Makefile.wholeprogram~	2012-12-27 07:48:59.732365181 +0100
-+++ multipath-tools-0.4.9/multipathd/Makefile	2012-12-27 07:51:27.731237733 +0100
++
+ ifndef RPM_OPT_FLAGS
+ 	RPM_OPT_FLAGS = -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4
+ endif
+--- multipath-tools-0.4.9-20121222/multipathd/Makefile.0001~	2012-12-22 09:40:59.000000000 +0100
++++ multipath-tools-0.4.9-20121222/multipathd/Makefile	2013-01-05 02:38:39.378455446 +0100
 @@ -20,6 +20,7 @@ LDFLAGS += -lpthread -ldevmapper -lreadl
  # object files
  #
@@ -49,7 +48,7 @@
  
 +ifndef WHOLE_PROGRAM
  $(EXEC): $(OBJS)
- 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(EXEC) $(OBJS)
+ 	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(EXEC)
  	$(GZIP) $(EXEC).8 > $(EXEC).8.gz
 +else
 +$(EXEC):

@@ -1,0 +1,58 @@
+---
+ kpartx/devmapper.c       |    4 ++--
+ libmultipath/devmapper.c |    6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+Index: multipath-tools-120821/kpartx/devmapper.c
+===================================================================
+--- multipath-tools-120821.orig/kpartx/devmapper.c
++++ multipath-tools-120821/kpartx/devmapper.c
+@@ -78,7 +78,7 @@ dm_simplecmd (int task, const char *name
+ 	if (no_flush)
+ 		dm_task_no_flush(dmt);
+ 
+-	if (udev_wait_flag && !dm_task_set_cookie(dmt, cookie, 0))
++	if (udev_wait_flag && !dm_task_set_cookie(dmt, cookie, DM_UDEV_DISABLE_LIBRARY_FALLBACK))
+ 		goto out;
+ 	r = dm_task_run(dmt);
+ 
+@@ -128,7 +128,7 @@ dm_addmap (int task, const char *name, c
+ 
+ 	dm_task_no_open_count(dmt);
+ 
+-	if (task == DM_DEVICE_CREATE && !dm_task_set_cookie(dmt, cookie, 0))
++	if (task == DM_DEVICE_CREATE && !dm_task_set_cookie(dmt, cookie, DM_UDEV_DISABLE_LIBRARY_FALLBACK))
+ 		goto addout;
+ 	r = dm_task_run (dmt);
+ 
+Index: multipath-tools-120821/libmultipath/devmapper.c
+===================================================================
+--- multipath-tools-120821.orig/libmultipath/devmapper.c
++++ multipath-tools-120821/libmultipath/devmapper.c
+@@ -219,7 +219,7 @@ dm_simplecmd (int task, const char *name
+ 		dm_task_no_flush(dmt);		/* for DM_DEVICE_SUSPEND/RESUME */
+ #endif
+ 
+-	if (udev_wait_flag && !dm_task_set_cookie(dmt, &conf->cookie, 0))
++	if (udev_wait_flag && !dm_task_set_cookie(dmt, &conf->cookie, DM_UDEV_DISABLE_LIBRARY_FALLBACK))
+ 		goto out;
+ 	r = dm_task_run (dmt);
+ 
+@@ -284,7 +284,7 @@ dm_addmap (int task, const char *target,
+ 	dm_task_no_open_count(dmt);
+ 
+ 	if (task == DM_DEVICE_CREATE &&
+-	    !dm_task_set_cookie(dmt, &conf->cookie, 0))
++	    !dm_task_set_cookie(dmt, &conf->cookie, DM_UDEV_DISABLE_LIBRARY_FALLBACK))
+ 		goto freeout;
+ 	r = dm_task_run (dmt);
+ 
+@@ -1244,7 +1244,7 @@ dm_rename (char * old, char * new)
+ 
+ 	dm_task_no_open_count(dmt);
+ 
+-	if (!dm_task_set_cookie(dmt, &conf->cookie, 0))
++	if (!dm_task_set_cookie(dmt, &conf->cookie, DM_UDEV_DISABLE_LIBRARY_FALLBACK))
+ 		goto out;
+ 	if (!dm_task_run(dmt))
+ 		goto out;

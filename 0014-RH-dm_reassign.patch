@@ -1,0 +1,80 @@
+---
+ libmultipath/devmapper.c |    4 +++-
+ libmultipath/sysfs.c     |   10 ++++++----
+ libmultipath/util.c      |    3 ++-
+ 3 files changed, 11 insertions(+), 6 deletions(-)
+
+Index: multipath-tools-120821/libmultipath/devmapper.c
+===================================================================
+--- multipath-tools-120821.orig/libmultipath/devmapper.c
++++ multipath-tools-120821/libmultipath/devmapper.c
+@@ -1372,8 +1372,10 @@ int dm_reassign(const char *mapname)
+ 		return 1;
+ 	}
+ 
+-	if (!(dmt = dm_task_create(DM_DEVICE_DEPS)))
++	if (!(dmt = dm_task_create(DM_DEVICE_DEPS))) {
++		condlog(3, "%s: couldn't make dm task", mapname);
+ 		return 0;
++	}
+ 
+ 	if (!dm_task_set_name(dmt, mapname))
+ 		goto out;
+Index: multipath-tools-120821/libmultipath/sysfs.c
+===================================================================
+--- multipath-tools-120821.orig/libmultipath/sysfs.c
++++ multipath-tools-120821/libmultipath/sysfs.c
+@@ -125,8 +125,10 @@ int sysfs_check_holders(char * check_dev
+ 		return 0;
+ 	}
+ 
+-	if (devt2devname(check_dev, PATH_SIZE, check_devt))
++	if (devt2devname(check_dev, PATH_SIZE, check_devt)) {
++		condlog(1, "can't get devname for %s", check_devt);
+ 		return 0;
++	}
+ 
+ 	condlog(3, "%s: checking holder", check_dev);
+ 
+@@ -143,17 +145,17 @@ int sysfs_check_holders(char * check_dev
+ 			continue;
+ 
+ 		if (sscanf(holder->d_name, "dm-%d", &table_minor) != 1) {
+-			condlog(3, "%s: %s is not a dm-device",
++			condlog(0, "%s: %s is not a dm-device",
+ 				check_dev, holder->d_name);
+ 			continue;
+ 		}
+ 		if (table_minor == new_minor) {
+-			condlog(3, "%s: holder already correct", check_dev);
++			condlog(0, "%s: holder already correct", check_dev);
+ 			continue;
+ 		}
+ 		table_name = dm_mapname(major, table_minor);
+ 
+-		condlog(3, "%s: reassign table %s old %s new %s", check_dev,
++		condlog(0, "%s: reassign table %s old %s new %s", check_dev,
+ 			table_name, check_devt, new_devt);
+ 
+ 		dm_reassign_table(table_name, check_devt, new_devt);
+Index: multipath-tools-120821/libmultipath/util.c
+===================================================================
+--- multipath-tools-120821.orig/libmultipath/util.c
++++ multipath-tools-120821/libmultipath/util.c
+@@ -161,6 +161,7 @@ devt2devname (char *devname, int devname
+ 	struct stat statbuf;
+ 
+ 	memset(block_path, 0, sizeof(block_path));
++	memset(dev, 0, sizeof(dev));
+ 	if (sscanf(devt, "%u:%u", &major, &minor) != 2) {
+ 		condlog(0, "Invalid device number %s", devt);
+ 		return 1;
+@@ -172,7 +173,7 @@ devt2devname (char *devname, int devname
+ 	if (stat("/sys/dev/block", &statbuf) == 0) {
+ 		/* Newer kernels have /sys/dev/block */
+ 		sprintf(block_path,"/sys/dev/block/%u:%u", major, minor);
+-		if (stat(block_path, &statbuf) == 0) {
++		if (lstat(block_path, &statbuf) == 0) {
+ 			if (S_ISLNK(statbuf.st_mode) &&
+ 			    readlink(block_path, dev, FILE_NAME_SIZE) > 0) {
+ 				char *p = strrchr(dev, '/');
