@@ -76,6 +76,27 @@ are:
 - kpartx: maps linear devmaps upon device partitions, which makes
   multipath maps partionable
 
+%define	major	0
+%define	libmultipath %mklibname multipath %{major}
+
+%package -n	%{libmultipath}
+Summary:	libmultipath library
+Group:		System/Libraries
+Conflicts:	multipath-tools < 0.4.9-1.20121222.1
+
+%description -n	%{libmultipath}
+This package ships the libmultipath library, part of multipath-tools.
+
+%define	libmpathpersist %mklibname mpathpersist %{major}
+
+%package -n	%{libmpathpersist}
+Summary:	libmpathpersist library
+Group:		System/Libraries
+Conflicts:	multipath-tools < 0.4.9-1.20121222.1
+
+%description -n	%{libmpathpersist}
+This package ships the libmpathpersist library, part of multipath-tools.
+
 %package -n	kpartx
 Summary:	Partition device manager for device-mapper devices
 Group:		System/Kernel and hardware
@@ -119,6 +140,11 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 # tree fix up
 install -d %{buildroot}%{_sysconfdir}/multipath
 
+# without any development headers installed, let's assume that the .so
+# symlinks won't actually be of any use, thus remove them
+
+rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
+
 %preun
 %_preun_service multipathd
 
@@ -139,9 +165,12 @@ install -d %{buildroot}%{_sysconfdir}/multipath
 %{_mandir}/man?/mpath*
 %dir /%{_lib}/multipath/
 /%{_lib}/multipath/*
-/%{_lib}/libmultipath*
-/%{_lib}/libmpathpersist.so
-/%{_lib}/libmpathpersist.so.*
+
+%files -n %{libmultipath}
+/%{_lib}/libmultipath.so.%{major}*
+
+%files -n %{libmpathpersist}
+/%{_lib}/libmpathpersist.so.%{major}*
 
 %files -n kpartx
 /sbin/kpartx
@@ -154,6 +183,7 @@ install -d %{buildroot}%{_sysconfdir}/multipath
 
 %changelog
 * Sat Jan  5 2013 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1.20121222.1
+- libify package
 - update to latest code from git upstream
 - sync with fedora patches
 
