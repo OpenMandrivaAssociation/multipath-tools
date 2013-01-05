@@ -152,7 +152,8 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 %_post_service multipathd
 
 %files
-%doc AUTHOR README* ChangeLog FAQ multipath.conf.*
+%doc AUTHOR README* ChangeLog FAQ
+%doc multipath.conf.annotated multipath.conf.defaults multipath.conf.synthetic
 %{_initrddir}/multipathd
 %dir %{_sysconfdir}/multipath
 %{_unitdir}/multipathd.service
@@ -183,6 +184,7 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 
 %changelog
 * Sat Jan  5 2013 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1.20121222.1
+- fix backup-file-in-package
 - fix executable-marked-as-config-file /etc/rc.d/init.d/multipathd
 - libify package
 - update to latest code from git upstream
