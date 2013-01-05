@@ -153,7 +153,7 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 
 %files
 %doc AUTHOR README* ChangeLog FAQ multipath.conf.*
-%config(noreplace) %{_initrddir}/multipathd
+%{_initrddir}/multipathd
 %dir %{_sysconfdir}/multipath
 %{_unitdir}/multipathd.service
 %config /lib/udev/rules.d/62-multipath.rules
@@ -183,6 +183,7 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 
 %changelog
 * Sat Jan  5 2013 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1.20121222.1
+- fix executable-marked-as-config-file /etc/rc.d/init.d/multipathd
 - libify package
 - update to latest code from git upstream
 - sync with fedora patches
