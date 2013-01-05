@@ -145,11 +145,14 @@ install -d %{buildroot}%{_sysconfdir}/multipath
 
 rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 
-%preun
-%_preun_service multipathd
-
 %post
-%_post_service multipathd
+%systemd_post multipathd.service
+
+%preun
+%systemd_preun multipathd.service
+
+%postun
+%systemd_postun_with_restart multipathd.service
 
 %files
 %doc AUTHOR README* ChangeLog FAQ
@@ -184,6 +187,7 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 
 %changelog
 * Sat Jan  5 2013 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1.20121222.1
+- replace sysvinit scritplets with systemd ones
 - fix backup-file-in-package
 - fix executable-marked-as-config-file /etc/rc.d/init.d/multipathd
 - libify package
