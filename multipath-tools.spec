@@ -10,44 +10,45 @@ Release:	1%{?gitdate:.%{gitdate}.1}
 Summary:	Tools to manage multipathed devices with the device-mapper
 Source0:	http://christophe.varoqui.free.fr/multipath-tools/%{name}-%{version}%{?gitdate:-%{gitdate}}.tar.xz
 Source1:	multipathd.init
-# kpartx: add -u flag, needed by dracut/systemd
-#Patch0:		multipath-tools-implement-update-option-for-kpartx.patch
-Patch1:		multipath-tools-0.4.9-20121222-whole-program.patch
-Patch1001:	0001-RH-dont_start_with_no_config.patch
-Patch1002:	0002-RH-multipath.rules.patch
-Patch1003:	0003-RH-Make-build-system-RH-Fedora-friendly.patch
-Patch1004:	0004-RH-multipathd-blacklist-all-by-default.patch
-Patch1005:	0005-RH-add-mpathconf.patch
-Patch1006:	0006-RH-add-find-multipaths.patch
-Patch1007:	0007-RH-add-hp_tur-checker.patch
-Patch1008:	0008-RH-RHEL5-style-partitions.patch
-Patch1009:	0009-RH-dont-remove-map-on-enomem.patch
-Patch1010:	0010-RH-deprecate-uid-gid-mode.patch
-Patch1011:	0011-RH-use-sync-support.patch
-Patch1012:	0012-RH-change-configs.patch
-Patch1013:	0013-RH-kpartx-msg.patch
-Patch1014:	0014-RH-dm_reassign.patch
-Patch1015:	0015-RH-selector_change.patch
-Patch1016:	0016-RH-retain_hwhandler.patch
-# Patch1017:	0017-RH-netapp_config.patch
-Patch1018:	0018-RH-remove-config-dups.patch
-Patch1019:	0019-RH-detect-prio.patch
-Patch1020:	0020-RH-netapp-config.patch
-Patch1021:	0021-RH-fix-oom-adj.patch
-Patch1022:	0022-RHBZ-864368-disable-libdm-failback.patch
-Patch1023:	0023-RHBZ-866291-update-documentation.patch
-Patch1024:	0024-RH-start-multipathd-service-before-lvm.patch
-Patch1025:	0025-RH-fix-systemd-start-order.patch
-Patch1026:	0026-RH-fix-mpathpersist-fns.patch
-Patch1027:	0027-RH-default-partition-delimiters.patch
-Patch1028:	0028-RH-storagetek-config.patch
-Patch1029:	0029-RH-kpartx-retry.patch
-Patch1030:	0030-RH-early-blacklist.patch
-Patch1031:	0031-RHBZ-882060-fix-null-strncmp.patch
-Patch1032:	0032-RH-make-path-fd-readonly.patch
-Patch1033:	0033-RH-dont-disable-libdm-failback-for-sync-case.patch
-Patch1034:	0034-RHBZ-887737-check-for-null-key.patch
-Patch1035:	0035-RHBZ-883981-cleanup-rpmdiff-issues.patch
+# Fedora patches
+Patch1:		0001-RH-dont_start_with_no_config.patch
+Patch2:		0002-RH-multipath.rules.patch
+Patch3:		0003-RH-Make-build-system-RH-Fedora-friendly.patch
+Patch4:		0004-RH-multipathd-blacklist-all-by-default.patch
+Patch5:		0005-RH-add-mpathconf.patch
+Patch6:		0006-RH-add-find-multipaths.patch
+Patch7:		0007-RH-add-hp_tur-checker.patch
+Patch8:		0008-RH-RHEL5-style-partitions.patch
+Patch9:		0009-RH-dont-remove-map-on-enomem.patch
+Patch10:	0010-RH-deprecate-uid-gid-mode.patch
+Patch11:	0011-RH-use-sync-support.patch
+Patch12:	0012-RH-change-configs.patch
+Patch13:	0013-RH-kpartx-msg.patch
+Patch14:	0014-RH-dm_reassign.patch
+Patch15:	0015-RH-selector_change.patch
+Patch16:	0016-RH-retain_hwhandler.patch
+# Patch17:	0017-RH-netapp_config.patch
+Patch18:	0018-RH-remove-config-dups.patch
+Patch19:	0019-RH-detect-prio.patch
+Patch20:	0020-RH-netapp-config.patch
+Patch21:	0021-RH-fix-oom-adj.patch
+Patch22:	0022-RHBZ-864368-disable-libdm-failback.patch
+Patch23:	0023-RHBZ-866291-update-documentation.patch
+Patch24:	0024-RH-start-multipathd-service-before-lvm.patch
+Patch25:	0025-RH-fix-systemd-start-order.patch
+Patch26:	0026-RH-fix-mpathpersist-fns.patch
+Patch27:	0027-RH-default-partition-delimiters.patch
+Patch28:	0028-RH-storagetek-config.patch
+Patch29:	0029-RH-kpartx-retry.patch
+Patch30:	0030-RH-early-blacklist.patch
+Patch31:	0031-RHBZ-882060-fix-null-strncmp.patch
+Patch32:	0032-RH-make-path-fd-readonly.patch
+Patch33:	0033-RH-dont-disable-libdm-failback-for-sync-case.patch
+Patch34:	0034-RHBZ-887737-check-for-null-key.patch
+Patch35:	0035-RHBZ-883981-cleanup-rpmdiff-issues.patch
+
+# our patches
+Patch1000:	multipath-tools-0.4.9-20121222-whole-program.patch
 
 Requires:	dmsetup
 Requires:	kpartx = %{version}
