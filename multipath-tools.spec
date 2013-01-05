@@ -10,6 +10,7 @@ Release:	1%{?gitdate:.%{gitdate}.1}
 Summary:	Tools to manage multipathed devices with the device-mapper
 Source0:	http://christophe.varoqui.free.fr/multipath-tools/%{name}-%{version}%{?gitdate:-%{gitdate}}.tar.xz
 Source1:	multipathd.init
+Source2:	multipath.conf
 # Fedora patches
 Patch1:		0001-RH-dont_start_with_no_config.patch
 Patch2:		0002-RH-multipath.rules.patch
@@ -49,6 +50,8 @@ Patch35:	0035-RHBZ-883981-cleanup-rpmdiff-issues.patch
 
 # our patches
 Patch1000:	multipath-tools-0.4.9-20121222-whole-program.patch
+# fix path set by redhat path
+Patch1001:	multipath-tools-0.4.9-20121222-fix-doc-path-to-config.patch
 
 Requires:	dmsetup
 Requires:	kpartx = %{version}
@@ -120,6 +123,8 @@ kpartx manages partition creation and removal for device-mapper devices.
 %setup -q -n %{name}-%{version}%{?gitdate:-%{gitdate}}
 %apply_patches
 
+cp %{SOURCE2} .
+
 %if %{with uclibc}
 cp -a kpartx kpartx-uclibc
 %endif
@@ -142,6 +147,8 @@ install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 # tree fix up
 install -d %{buildroot}%{_sysconfdir}/multipath
 
+touch %{buildroot}%{_sysconfdir}/multipath.conf
+
 # without any development headers installed, let's assume that the .so
 # symlinks won't actually be of any use, thus remove them
 
@@ -158,9 +165,10 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 
 %files
 %doc AUTHOR README* ChangeLog FAQ
-%doc multipath.conf.annotated multipath.conf.defaults multipath.conf.synthetic
+%doc multipath.conf multipath.conf.annotated multipath.conf.defaults multipath.conf.synthetic
 %{_initrddir}/multipathd
 %dir %{_sysconfdir}/multipath
+%ghost %config(noreplace) %{_sysconfdir}/multipath.conf
 %{_unitdir}/multipathd.service
 %config /lib/udev/rules.d/62-multipath.rules
 /sbin/multipath
@@ -189,6 +197,7 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 
 %changelog
 * Sat Jan  5 2013 Per Øyvind Karlsen <peroyvind@mandriva.org> 0.4.9-1.20121222.1
+- add a ghost config file for %{_sysconfdir}/multipath.conf
 - replace sysvinit scritplets with systemd ones
 - fix backup-file-in-package
 - fix executable-marked-as-config-file /etc/rc.d/init.d/multipathd
