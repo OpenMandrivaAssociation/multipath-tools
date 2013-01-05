@@ -61,8 +61,9 @@ BuildRequires:	libaio-devel
 %if %{with uclibc}
 BuildRequires:	uClibc-devel
 %endif
-Requires(preun):rpm-helper
-Requires(post):	rpm-helper
+Requires(post):	systemd-units
+Requires(preun):systemd-units
+Requires(postun):systemd-units
 
 %description
 This package provides the tools to manage multipathed devices by
