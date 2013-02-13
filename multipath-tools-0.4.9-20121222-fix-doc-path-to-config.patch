@@ -1,0 +1,33 @@
+--- multipath-tools-0.4.9-20121222/libmultipath/config.c.docpath~	2013-01-05 07:19:51.484565584 +0100
++++ multipath-tools-0.4.9-20121222/libmultipath/config.c	2013-01-05 07:22:46.848278689 +0100
+@@ -573,7 +573,7 @@ load_config (char * file)
+ 		init_keywords();
+ 		condlog(0, "/etc/multipath.conf does not exist, blacklisting all devices.");
+ 		condlog(0, "A default multipath.conf file is located at");
+-		condlog(0, "/usr/share/doc/device-mapper-multipath-%d.%d.%d/multipath.conf", MULTIPATH_VERSION(VERSION_CODE));
++		condlog(0, "/usr/share/doc/multipath-tools/multipath.conf");
+ 		condlog(0, "You can run /sbin/mpathconf to create or modify /etc/multipath.conf");
+ 		if (conf->blist_devnode == NULL) {
+ 			conf->blist_devnode = vector_alloc();
+--- multipath-tools-0.4.9-20121222/multipath/mpathconf.8.docpath~	2013-01-05 07:23:07.374413876 +0100
++++ multipath-tools-0.4.9-20121222/multipath/mpathconf.8	2013-01-05 07:23:27.745554455 +0100
+@@ -35,7 +35,7 @@ If
+ .B /etc/multipath.conf
+ already exists, mpathconf will edit it. If it does not exist, mpathconf will
+ use
+-.B /usr/share/doc/device-mapper-multipath-0.4.9/multipath.conf
++.B /usr/share/doc/multipath-tools/multipath.conf
+ as the starting file. This file has
+ .B user_friendly_names
+ set. If this file does not exist, mpathconf will create
+--- multipath-tools-0.4.9-20121222/multipath/mpathconf.docpath~	2013-01-05 07:20:28.534646929 +0100
++++ multipath-tools-0.4.9-20121222/multipath/mpathconf	2013-01-05 07:22:21.576128082 +0100
+@@ -19,7 +19,7 @@
+ 
+ unset ENABLE FIND FRIENDLY MODULE MULTIPATHD HAVE_DISABLE HAVE_FIND HAVE_BLACKLIST HAVE_DEFAULTS HAVE_FRIENDLY HAVE_MULTIPATHD HAVE_MODULE SHOW_STATUS CHANGED_CONFIG
+ 
+-DEFAULT_CONFIGFILE="/usr/share/doc/device-mapper-multipath-0.4.9/multipath.conf"
++DEFAULT_CONFIGFILE="/usr/share/doc/multipath-tools/multipath.conf"
+ CONFIGFILE="/etc/multipath.conf"
+ MULTIPATHDIR="/etc/multipath"
+ TMPFILE=/etc/multipath/.multipath.conf.tmp
