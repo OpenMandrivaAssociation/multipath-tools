@@ -197,15 +197,6 @@ touch %{buildroot}%{_sysconfdir}/multipath.conf
 
 rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 
-%post
-%systemd_post multipathd.service
-
-%preun
-%systemd_preun multipathd.service
-
-%postun
-%systemd_postun_with_restart multipathd.service
-
 %files
 %doc AUTHOR README* ChangeLog FAQ
 %doc multipath.conf multipath.conf.annotated multipath.conf.defaults multipath.conf.synthetic
