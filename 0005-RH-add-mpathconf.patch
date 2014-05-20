@@ -6,11 +6,11 @@
  multipath/mpathconf.8 |  103 ++++++++++++++++
  5 files changed, 423 insertions(+), 2 deletions(-)
 
-Index: multipath-tools-120817/libmultipath/config.c
+Index: multipath-tools-130222/libmultipath/config.c
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/config.c
-+++ multipath-tools-120817/libmultipath/config.c
-@@ -556,6 +556,7 @@ load_config (char * file)
+--- multipath-tools-130222.orig/libmultipath/config.c
++++ multipath-tools-130222/libmultipath/config.c
+@@ -589,6 +589,7 @@ load_config (char * file)
  		condlog(0, "/etc/multipath.conf does not exist, blacklisting all devices.");
  		condlog(0, "A default multipath.conf file is located at");
  		condlog(0, "/usr/share/doc/device-mapper-multipath-%d.%d.%d/multipath.conf", MULTIPATH_VERSION(VERSION_CODE));
@@ -18,10 +18,10 @@ Index: multipath-tools-120817/libmultipath/config.c
  		if (conf->blist_devnode == NULL) {
  			conf->blist_devnode = vector_alloc();
  			if (!conf->blist_devnode) {
-Index: multipath-tools-120817/multipath/Makefile
+Index: multipath-tools-130222/multipath/Makefile
 ===================================================================
---- multipath-tools-120817.orig/multipath/Makefile
-+++ multipath-tools-120817/multipath/Makefile
+--- multipath-tools-130222.orig/multipath/Makefile
++++ multipath-tools-130222/multipath/Makefile
 @@ -17,22 +17,27 @@ $(EXEC): $(OBJS)
  	$(CC) $(CFLAGS) $(OBJS) -o $(EXEC) $(LDFLAGS)
  	$(GZIP) $(EXEC).8 > $(EXEC).8.gz
@@ -50,11 +50,11 @@ Index: multipath-tools-120817/multipath/Makefile
  
  clean:
  	rm -f core *.o $(EXEC) *.gz
-Index: multipath-tools-120817/multipath/main.c
+Index: multipath-tools-130222/multipath/main.c
 ===================================================================
---- multipath-tools-120817.orig/multipath/main.c
-+++ multipath-tools-120817/multipath/main.c
-@@ -432,10 +432,10 @@ main (int argc, char *argv[])
+--- multipath-tools-130222.orig/multipath/main.c
++++ multipath-tools-130222/multipath/main.c
+@@ -433,10 +433,10 @@ main (int argc, char *argv[])
  		exit(1);
  	}
  
@@ -67,10 +67,10 @@ Index: multipath-tools-120817/multipath/main.c
  		exit(1);
  
  	while ((arg = getopt(argc, argv, ":dchl::FfM:v:p:b:Brtq")) != EOF ) {
-Index: multipath-tools-120817/multipath/mpathconf
+Index: multipath-tools-130222/multipath/mpathconf
 ===================================================================
 --- /dev/null
-+++ multipath-tools-120817/multipath/mpathconf
++++ multipath-tools-130222/multipath/mpathconf
 @@ -0,0 +1,312 @@
 +#!/bin/sh
 +#
@@ -384,10 +384,10 @@ Index: multipath-tools-120817/multipath/mpathconf
 +elif [ -n "$CHANGED_CONFIG" -a "$HAVE_MULTIPATHD" = 1 ]; then
 +	service multipathd reload
 +fi
-Index: multipath-tools-120817/multipath/mpathconf.8
+Index: multipath-tools-130222/multipath/mpathconf.8
 ===================================================================
 --- /dev/null
-+++ multipath-tools-120817/multipath/mpathconf.8
++++ multipath-tools-130222/multipath/mpathconf.8
 @@ -0,0 +1,103 @@
 +.TH MPATHCONF 8 "June 2010" "" "Linux Administrator's Manual"
 +.SH NAME

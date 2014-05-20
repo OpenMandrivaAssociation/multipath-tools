@@ -1,0 +1,60 @@
+--- multipath-tools-130222/Makefile.inc.1000~	2014-05-20 13:56:24.799499889 +0200
++++ multipath-tools-130222/Makefile.inc	2014-05-20 13:59:02.131788795 +0200
+@@ -38,6 +38,8 @@ mpathpersistdir = $(TOPDIR)/libmpathpers
+ GZIP        = /bin/gzip -9 -c
+ INSTALL_PROGRAM = install
+ 
++WHOLEFLAGS   = -Wl,--no-warn-common -flto -fwhole-program
++
+ ifndef RPM_OPT_FLAGS
+ 	RPM_OPT_FLAGS = -O2 -g -pipe -Wformat-security -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4
+ endif
+--- multipath-tools-130222/kpartx/Makefile.1000~	2014-05-20 13:56:24.798499843 +0200
++++ multipath-tools-130222/kpartx/Makefile	2014-05-20 13:58:37.687658532 +0200
+@@ -15,13 +15,20 @@ endif
+ LDFLAGS = -ldevmapper
+ OBJS = bsd.o dos.o kpartx.o solaris.o unixware.o dasd.o sun.o \
+        gpt.o mac.o ps3.o crc32.o lopart.o xstrncpy.o devmapper.o
++SRCS = $(subst .o,.c,$(OBJS))
+ EXEC = kpartx
+ 
+ all: $(EXEC)
+ 
++ifndef WHOLE_PROGRAM
+ $(EXEC): $(OBJS)
+ 	$(CC) $(OBJS) -o $(EXEC) $(LDFLAGS)
+ 	$(GZIP) $(EXEC).8 > $(EXEC).8.gz
++else
++$(EXEC):
++	$(CC) $(WHOLEFLAGS) $(SRCS) $(CFLAGS) -o $(EXEC) $(LDFLAGS)
++	$(GZIP) $(EXEC).8 > $(EXEC).8.gz
++endif
+ 
+ install: $(EXEC) $(EXEC).8
+ 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(bindir)
+--- multipath-tools-130222/multipathd/Makefile.1000~	2014-05-20 13:56:24.451483726 +0200
++++ multipath-tools-130222/multipathd/Makefile	2014-05-20 13:56:24.799499889 +0200
+@@ -21,6 +21,7 @@ LDFLAGS += -lpthread -ldevmapper -lreadl
+ # object files
+ #
+ OBJS = main.o pidfile.o uxlsnr.o uxclnt.o cli.o cli_handlers.o
++SRCS = $(subst .o,.c,$(OBJS))
+ 
+ 
+ #
+@@ -28,9 +29,15 @@ OBJS = main.o pidfile.o uxlsnr.o uxclnt.
+ #
+ all : $(EXEC)
+ 
++ifndef WHOLE_PROGRAM
+ $(EXEC): $(OBJS)
+ 	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(EXEC)
+ 	$(GZIP) $(EXEC).8 > $(EXEC).8.gz
++else
++$(EXEC):
++	$(CC) $(WHOLEFLAGS) $(SRCS) $(CFLAGS) -o $(EXEC) $(LDFLAGS)
++	$(GZIP) $(EXEC).8 > $(EXEC).8.gz
++endif
+ 
+ install:
+ 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(bindir)

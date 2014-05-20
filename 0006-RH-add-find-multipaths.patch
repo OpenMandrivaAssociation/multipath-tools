@@ -10,23 +10,23 @@
  multipathd/main.c        |    6 ++++++
  9 files changed, 82 insertions(+), 1 deletion(-)
 
-Index: multipath-tools-120817/libmultipath/config.c
+Index: multipath-tools-130222/libmultipath/config.c
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/config.c
-+++ multipath-tools-120817/libmultipath/config.c
-@@ -517,6 +517,7 @@ load_config (char * file)
+--- multipath-tools-130222.orig/libmultipath/config.c
++++ multipath-tools-130222/libmultipath/config.c
+@@ -547,6 +547,7 @@ load_config (char * file)
  	conf->reassign_maps = DEFAULT_REASSIGN_MAPS;
  	conf->checkint = DEFAULT_CHECKINT;
  	conf->max_checkint = MAX_CHECKINT(conf->checkint);
 +	conf->find_multipaths = DEFAULT_FIND_MULTIPATHS;
- 
- 	/*
- 	 * preload default hwtable
-Index: multipath-tools-120817/libmultipath/configure.c
+ 	conf->fast_io_fail = DEFAULT_FAST_IO_FAIL;
+ 	conf->retain_hwhandler = DEFAULT_RETAIN_HWHANDLER;
+ 	conf->detect_prio = DEFAULT_DETECT_PRIO;
+Index: multipath-tools-130222/libmultipath/configure.c
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/configure.c
-+++ multipath-tools-120817/libmultipath/configure.c
-@@ -505,6 +505,10 @@ coalesce_paths (struct vectors * vecs, v
+--- multipath-tools-130222.orig/libmultipath/configure.c
++++ multipath-tools-130222/libmultipath/configure.c
+@@ -508,6 +508,10 @@ coalesce_paths (struct vectors * vecs, v
  
  	memset(empty_buff, 0, WWID_SIZE);
  
@@ -37,7 +37,7 @@ Index: multipath-tools-120817/libmultipath/configure.c
  	if (force_reload) {
  		vector_foreach_slot (pathvec, pp1, k) {
  			pp1->mpp = NULL;
-@@ -534,6 +538,13 @@ coalesce_paths (struct vectors * vecs, v
+@@ -537,6 +541,13 @@ coalesce_paths (struct vectors * vecs, v
  		if (refwwid && strncmp(pp1->wwid, refwwid, WWID_SIZE))
  			continue;
  
@@ -51,22 +51,22 @@ Index: multipath-tools-120817/libmultipath/configure.c
  		/*
  		 * at this point, we know we really got a new mp
  		 */
-Index: multipath-tools-120817/libmultipath/defaults.h
+Index: multipath-tools-130222/libmultipath/defaults.h
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/defaults.h
-+++ multipath-tools-120817/libmultipath/defaults.h
+--- multipath-tools-130222.orig/libmultipath/defaults.h
++++ multipath-tools-130222/libmultipath/defaults.h
 @@ -15,6 +15,7 @@
  #define DEFAULT_USER_FRIENDLY_NAMES    0
  #define DEFAULT_VERBOSITY	2
  #define DEFAULT_REASSIGN_MAPS	1
-+#define DEFAULT_FIND_MULTIPATHS 0
- 
- #define DEFAULT_CHECKINT	5
- #define MAX_CHECKINT(a)		(a << 2)
-Index: multipath-tools-120817/libmultipath/dict.c
++#define DEFAULT_FIND_MULTIPATHS	0
+ #define DEFAULT_FAST_IO_FAIL	5
+ #define DEFAULT_RETAIN_HWHANDLER RETAIN_HWHANDLER_OFF
+ #define DEFAULT_DETECT_PRIO DETECT_PRIO_OFF
+Index: multipath-tools-130222/libmultipath/dict.c
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/dict.c
-+++ multipath-tools-120817/libmultipath/dict.c
+--- multipath-tools-130222.orig/libmultipath/dict.c
++++ multipath-tools-130222/libmultipath/dict.c
 @@ -585,6 +585,27 @@ def_reservation_key_handler(vector strve
  }
  
@@ -95,7 +95,7 @@ Index: multipath-tools-120817/libmultipath/dict.c
  def_names_handler(vector strvec)
  {
  	char * buff;
-@@ -2560,6 +2581,18 @@ snprint_def_log_checker_err (char * buff
+@@ -2700,6 +2721,18 @@ snprint_def_log_checker_err (char * buff
  }
  
  static int
@@ -114,18 +114,18 @@ Index: multipath-tools-120817/libmultipath/dict.c
  snprint_def_user_friendly_names (char * buff, int len, void * data)
  {
  	if (conf->user_friendly_names  == USER_FRIENDLY_NAMES_ON)
-@@ -2662,6 +2695,7 @@ init_keywords(void)
+@@ -2833,6 +2866,7 @@ init_keywords(void)
  	install_keyword("wwids_file", &wwids_file_handler, &snprint_def_wwids_file);
  	install_keyword("log_checker_err", &def_log_checker_err_handler, &snprint_def_log_checker_err);
  	install_keyword("reservation_key", &def_reservation_key_handler, &snprint_def_reservation_key);
 +	install_keyword("find_multipaths", &def_find_multipaths_handler, &snprint_def_find_multipaths);
+ 	install_keyword("retain_attached_hw_handler", &def_retain_hwhandler_handler, &snprint_def_retain_hwhandler_handler);
+ 	install_keyword("detect_prio", &def_detect_prio_handler, &snprint_def_detect_prio);
  	__deprecated install_keyword("default_selector", &def_selector_handler, NULL);
- 	__deprecated install_keyword("default_path_grouping_policy", &def_pgpolicy_handler, NULL);
- 	__deprecated install_keyword("default_uid_attribute", &def_uid_attribute_handler, NULL);
-Index: multipath-tools-120817/libmultipath/wwids.c
+Index: multipath-tools-130222/libmultipath/wwids.c
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/wwids.c
-+++ multipath-tools-120817/libmultipath/wwids.c
+--- multipath-tools-130222.orig/libmultipath/wwids.c
++++ multipath-tools-130222/libmultipath/wwids.c
 @@ -125,6 +125,32 @@ out:
  }
  
@@ -159,10 +159,10 @@ Index: multipath-tools-120817/libmultipath/wwids.c
  remember_wwid(char *wwid)
  {
  	int ret = check_wwids_file(wwid, 1);
-Index: multipath-tools-120817/libmultipath/wwids.h
+Index: multipath-tools-130222/libmultipath/wwids.h
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/wwids.h
-+++ multipath-tools-120817/libmultipath/wwids.h
+--- multipath-tools-130222.orig/libmultipath/wwids.h
++++ multipath-tools-130222/libmultipath/wwids.h
 @@ -12,6 +12,7 @@
  "#\n" \
  "# Valid WWIDs:\n"
@@ -171,11 +171,11 @@ Index: multipath-tools-120817/libmultipath/wwids.h
  int remember_wwid(char *wwid);
  int check_wwids_file(char *wwid, int write_wwid);
  
-Index: multipath-tools-120817/multipath/main.c
+Index: multipath-tools-130222/multipath/main.c
 ===================================================================
---- multipath-tools-120817.orig/multipath/main.c
-+++ multipath-tools-120817/multipath/main.c
-@@ -332,7 +332,7 @@ configure (void)
+--- multipath-tools-130222.orig/multipath/main.c
++++ multipath-tools-130222/multipath/main.c
+@@ -333,7 +333,7 @@ configure (void)
  	/*
  	 * core logic entry point
  	 */
@@ -184,10 +184,10 @@ Index: multipath-tools-120817/multipath/main.c
  
  out:
  	if (refwwid)
-Index: multipath-tools-120817/multipathd/main.c
+Index: multipath-tools-130222/multipathd/main.c
 ===================================================================
---- multipath-tools-120817.orig/multipathd/main.c
-+++ multipath-tools-120817/multipathd/main.c
+--- multipath-tools-130222.orig/multipathd/main.c
++++ multipath-tools-130222/multipathd/main.c
 @@ -49,6 +49,7 @@
  #include <print.h>
  #include <configure.h>
@@ -196,7 +196,7 @@ Index: multipath-tools-120817/multipathd/main.c
  #include <pgpolicies.h>
  #include <uevent.h>
  
-@@ -473,6 +474,11 @@ rescan:
+@@ -471,6 +472,11 @@ rescan:
  			return 1;
  		}
  
@@ -208,11 +208,11 @@ Index: multipath-tools-120817/multipathd/main.c
  		condlog(4,"%s: creating new map", pp->dev);
  		if ((mpp = add_map_with_path(vecs, pp, 1))) {
  			mpp->action = ACT_CREATE;
-Index: multipath-tools-120817/libmultipath/config.h
+Index: multipath-tools-130222/libmultipath/config.h
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/config.h
-+++ multipath-tools-120817/libmultipath/config.h
-@@ -104,6 +104,7 @@ struct config {
+--- multipath-tools-130222.orig/libmultipath/config.h
++++ multipath-tools-130222/libmultipath/config.h
+@@ -106,6 +106,7 @@ struct config {
  	unsigned int dev_loss;
  	int log_checker_err;
  	int allow_queueing;

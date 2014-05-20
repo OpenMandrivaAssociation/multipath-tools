@@ -16,10 +16,10 @@ Signed-off-by: Fabio M. Di Nitto <fdinitto@redhat.com>
  libmultipath/config.h |    1 +
  2 files changed, 17 insertions(+)
 
-Index: multipath-tools-120817/libmultipath/config.c
+Index: multipath-tools-130222/libmultipath/config.c
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/config.c
-+++ multipath-tools-120817/libmultipath/config.c
+--- multipath-tools-130222.orig/libmultipath/config.c
++++ multipath-tools-130222/libmultipath/config.c
 @@ -21,6 +21,7 @@
  #include "defaults.h"
  #include "prio.h"
@@ -28,7 +28,7 @@ Index: multipath-tools-120817/libmultipath/config.c
  
  static int
  hwe_strmatch (struct hwentry *hwe1, struct hwentry *hwe2)
-@@ -552,6 +553,21 @@ load_config (char * file)
+@@ -585,6 +586,21 @@ load_config (char * file)
  
  	} else {
  		init_keywords();
@@ -50,10 +50,10 @@ Index: multipath-tools-120817/libmultipath/config.c
  	}
  
  	/*
-Index: multipath-tools-120817/libmultipath/config.h
+Index: multipath-tools-130222/libmultipath/config.h
 ===================================================================
---- multipath-tools-120817.orig/libmultipath/config.h
-+++ multipath-tools-120817/libmultipath/config.h
+--- multipath-tools-130222.orig/libmultipath/config.h
++++ multipath-tools-130222/libmultipath/config.h
 @@ -6,6 +6,7 @@
  
  #define ORIGIN_DEFAULT 0
