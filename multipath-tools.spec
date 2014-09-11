@@ -177,7 +177,7 @@ cp -a kpartx kpartx-uclibc
 %make -C kpartx-uclibc OPTFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" LIB=%{_lib} WHOLE_PROGRAM=1
 %endif
 # FIXME:	WHOLE_PROGRAM=1
-%make OPTFLAGS="%{optflags}" LIB=%{_lib} #WHOLE_PROGRAM=1
+%make OPTFLAGS="%{optflags}" LIB=%{_lib} #WHOLE_PROGRAM=1 CC=%{__cc}
 
 %install
 %makeinstall_std bindir=/sbin syslibdir=/%{_lib} rcdir=%{_initrddir} unitdir=%{_unitdir} libdir=/%{_lib}/multipath libudevdir=%{_udevrulesdir}/.. #WHOLE_PROGRAM=1
