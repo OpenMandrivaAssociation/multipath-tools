@@ -1,10 +1,10 @@
-%bcond_without	uclibc
+%bcond_with	uclibc
 %define	gitdate	20130222
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.4.9
-Release:	2%{?gitdate:.%{gitdate}.1}
+Release:	2%{?gitdate:.%{gitdate}.2}
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/multipath-tools/
@@ -103,7 +103,7 @@ Patch1002:	multipath-tools-0.4.9-20130222-libudevdir.patch
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
-BuildRequires:	pkgconfig(devmapper) 
+BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 %if %{with uclibc}
 BuildRequires:	uClibc-devel
@@ -153,6 +153,7 @@ Conflicts:	multipath-tools < 0.4.8-16
 %description -n	kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
+%if %{with uclibc}
 %package -n	uclibc-kpartx
 Summary:	Partition device manager for device-mapper devices (uClibc build)
 Group:		System/Kernel and hardware
@@ -161,6 +162,7 @@ Requires:	kpartx = %{EVRD}
 
 %description -n	uclibc-kpartx
 kpartx manages partition creation and removal for device-mapper devices.
+%endif
 
 %prep
 %setup -qn multipath-tools-130222
