@@ -71,8 +71,7 @@ cp %{SOURCE1} .
 %make -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc}
 
 %install
-%makeinstall_std
-#%makeinstall_std bindir=/sbin syslibdir=/%{_lib} rcdir=%{_initrddir} unitdir=%{_unitdir} libdir=/%{_lib}/multipath libudevdir=%{_udevrulesdir}/..
+%makeinstall_std bindir=/sbin syslibdir=/%{_lib} unitdir=%{_unitdir} libdir=/%{_lib}/multipath libudevdir=%{_udevrulesdir}/..
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/multipathd.preset << EOF
@@ -82,6 +81,9 @@ EOF
 # tree fix up
 install -d %{buildroot}%{_sysconfdir}/multipath
 touch %{buildroot}%{_sysconfdir}/multipath.conf
+
+#(tpg) not needed
+rm -rf %{buildroot}/%{_lib}/libmpathpersist.so
 
 %files
 %doc AUTHOR README* ChangeLog FAQ
