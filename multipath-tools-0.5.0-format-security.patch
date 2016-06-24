@@ -1,0 +1,16 @@
+diff --git a/libmultipath/checkers/rdac.c b/libmultipath/checkers/rdac.c
+index e0b2ea4..c96c259 100644
+--- a/libmultipath/checkers/rdac.c
++++ b/libmultipath/checkers/rdac.c
+@@ -308,8 +308,9 @@ libcheck_check (struct checker * c)
+ done:
+ 	switch (ret) {
+ 	case PATH_DOWN:
+-		MSG(c, (inqfail) ? MSG_RDAC_DOWN_TYPE("inquiry failed") :
+-			checker_msg_string(&inq));
++		strncpy(c->message,
++			(inqfail) ? MSG_RDAC_DOWN_TYPE("inquiry failed") :
++			checker_msg_string(&inq), CHECKER_MSG_LEN);
+ 		break;
+ 	case PATH_UP:
+ 		MSG(c, MSG_RDAC_UP);
