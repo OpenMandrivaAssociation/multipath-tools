@@ -1,9 +1,10 @@
 %define	gitdate	20130222
+%define _disable_lto 1
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.4.9
-Release:	2%{?gitdate:.%{gitdate}.3}
+Release:	2%{?gitdate:.%{gitdate}.4}
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/multipath-tools/
@@ -201,5 +202,3 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 %files -n kpartx
 /sbin/kpartx
 %{_mandir}/man8/kpartx.8*
-
-
