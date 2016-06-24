@@ -71,7 +71,7 @@ cp %{SOURCE1} .
 %make -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc}
 
 %install
-%makeinstall_std bindir=/sbin syslibdir=/%{_lib} unitdir=%{_unitdir} libdir=/%{_lib}/multipath libudevdir=%{_udevrulesdir}/..
+%makeinstall_std udevrulesdir=%{_udevrulesdir}
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/multipathd.preset << EOF
@@ -84,6 +84,7 @@ touch %{buildroot}%{_sysconfdir}/multipath.conf
 
 #(tpg) not needed
 rm -rf %{buildroot}/%{_lib}/libmpathpersist.so
+rm -rf %{buildroot}%{_includedir}/mpath_persist.h
 
 %files
 %doc AUTHOR README* ChangeLog FAQ
@@ -93,11 +94,8 @@ rm -rf %{buildroot}/%{_lib}/libmpathpersist.so
 %{_presetdir}/multipathd.preset
 %{_unitdir}/multipathd.service
 %{_unitdir}/multipathd.socket
-%config %{_udevrulesdir}/11-dm-mpath.rules
-%config %{_udevrulesdir}/62-multipath.rules
 /sbin/multipath
 /sbin/multipathd
-/sbin/mpathconf
 /sbin/mpathpersist
 %{_mandir}/man?/multipath*
 %{_mandir}/man?/mpath*
@@ -111,5 +109,7 @@ rm -rf %{buildroot}/%{_lib}/libmpathpersist.so
 /%{_lib}/libmpathpersist.so.%{major}*
 
 %files -n kpartx
+%{_udevrulesdir}/kpartx.rules
 /sbin/kpartx
+/lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8*
