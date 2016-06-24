@@ -83,11 +83,6 @@ EOF
 install -d %{buildroot}%{_sysconfdir}/multipath
 touch %{buildroot}%{_sysconfdir}/multipath.conf
 
-# without any development headers installed, let's assume that the .so
-# symlinks won't actually be of any use, thus remove them
-
-rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
-
 %files
 %doc AUTHOR README* ChangeLog FAQ
 %doc multipath.conf multipath.conf.annotated multipath.conf.defaults multipath.conf.synthetic
