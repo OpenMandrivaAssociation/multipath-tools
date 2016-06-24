@@ -71,7 +71,7 @@ cp %{SOURCE1} .
 %make -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc}
 
 %install
-%makeinstall_std udevrulesdir=%{_udevrulesdir}
+%makeinstall_std udevrulesdir=%{_udevrulesdir} unitdir=%{_systemunitdir}
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/multipathd.preset << EOF
