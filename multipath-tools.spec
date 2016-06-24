@@ -19,6 +19,7 @@ BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
+BuildRequires:	pkgconfig(libsystemd)
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
 Conflicts:	kpartx < 0.4.8-16
