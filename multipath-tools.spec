@@ -1,10 +1,9 @@
-%bcond_with	uclibc
 %define	gitdate	20130222
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.4.9
-Release:	2%{?gitdate:.%{gitdate}.2}
+Release:	2%{?gitdate:.%{gitdate}.3}
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/multipath-tools/
@@ -105,9 +104,6 @@ BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
-%if %{with uclibc}
-BuildRequires:	uClibc-devel
-%endif
 Requires(post,preun,postun):	systemd-units
 Requires:	dmsetup
 Requires:	kpartx = %{version}
@@ -153,39 +149,18 @@ Conflicts:	multipath-tools < 0.4.8-16
 %description -n	kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
-%if %{with uclibc}
-%package -n	uclibc-kpartx
-Summary:	Partition device manager for device-mapper devices (uClibc build)
-Group:		System/Kernel and hardware
-Conflicts:	multipath-tools < 0.4.8-16
-Requires:	kpartx = %{EVRD}
-
-%description -n	uclibc-kpartx
-kpartx manages partition creation and removal for device-mapper devices.
-%endif
-
 %prep
 %setup -qn multipath-tools-130222
 %apply_patches
 
 cp %{SOURCE2} .
 
-%if %{with uclibc}
-cp -a kpartx kpartx-uclibc
-%endif
-
 %build
-%if %{with uclibc}
-%make -C kpartx-uclibc OPTFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" LIB=%{_lib} WHOLE_PROGRAM=1
-%endif
 # FIXME:	WHOLE_PROGRAM=1
-%make OPTFLAGS="%{optflags}" LIB=%{_lib} #WHOLE_PROGRAM=1 CC=%{__cc}
+%make OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc}
 
 %install
 %makeinstall_std bindir=/sbin syslibdir=/%{_lib} rcdir=%{_initrddir} unitdir=%{_unitdir} libdir=/%{_lib}/multipath libudevdir=%{_udevrulesdir}/.. #WHOLE_PROGRAM=1
-%if %{with uclibc}
-install -m755 kpartx-uclibc/kpartx -D %{buildroot}%{uclibc_root}/sbin/kpartx
-%endif
 
 install -m755 %{SOURCE1} -D %{buildroot}%{_initrddir}/multipathd
 
@@ -227,8 +202,4 @@ rm %{buildroot}/%{_lib}/{libmultipath,libmpathpersist}.so
 /sbin/kpartx
 %{_mandir}/man8/kpartx.8*
 
-%if %{with uclibc}
-%files -n uclibc-kpartx
-%{uclibc_root}/sbin/kpartx
-%endif
 
