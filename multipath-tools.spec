@@ -6,7 +6,7 @@
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.5.0
-Release:	1
+Release:	2
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/multipath-tools/
@@ -49,7 +49,7 @@ Summary:	libmpathpersist library
 Group:		System/Libraries
 Conflicts:	multipath-tools < 0.4.9-1.20121222.1
 
-%description -n	%{libmpathpersist}
+%description -n %{libmpathpersist}
 This package ships the libmpathpersist library, part of multipath-tools.
 
 %package -n kpartx
@@ -74,7 +74,7 @@ cp %{SOURCE1} .
 %makeinstall_std udevrulesdir=%{_udevrulesdir} unitdir=%{_systemunitdir}
 
 install -d %{buildroot}%{_presetdir}
-cat > %{buildroot}%{_presetdir}/multipathd.preset << EOF
+cat > %{buildroot}%{_presetdir}/86-multipathd.preset << EOF
 enable multipathd.socket
 EOF
 
@@ -91,7 +91,7 @@ rm -rf %{buildroot}%{_includedir}/mpath_persist.h
 %doc multipath.conf multipath.conf.annotated multipath.conf.defaults multipath.conf.synthetic
 %dir %{_sysconfdir}/multipath
 %ghost %config(noreplace) %{_sysconfdir}/multipath.conf
-%{_presetdir}/multipathd.preset
+%{_presetdir}/86-multipathd.preset
 %{_unitdir}/multipathd.service
 %{_unitdir}/multipathd.socket
 /sbin/multipath
