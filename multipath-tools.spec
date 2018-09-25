@@ -2,15 +2,19 @@
 %define libmultipath %mklibname multipath %{major}
 %define libmpathpersist %mklibname mpathpersist %{major}
 %define _disable_lto 1
+%global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
-Version:	0.5.0
-Release:	2
+Version:	0.7.7
+Release:	1
 License:	GPLv2
 Group:		System/Kernel and hardware
-Url:		http://christophe.varoqui.free.fr/multipath-tools/
-Source0:	http://christophe.varoqui.free.fr/multipath-tools/%{name}-%{version}.tar.bz2
+Url:		http://christophe.varoqui.free.fr/
+# The source for this package was pulled from upstream's git repo.  Use the
+# following command to generate the tarball
+# curl "https://git.opensvc.com/?p=multipath-tools/.git;a=snapshot;h=refs/tags/0.7.7;sf=tgz" -o multipath-tools-0.7.7.tgz
+Source0:	%{name}-%{version}.tar.bz2
 Source1:	multipath.conf
 Patch0:		multipath-tools-0.5.0-udevrulesdir.patch
 Patch1:		multipath-tools-0.5.0-format-security.patch
@@ -68,10 +72,10 @@ sed -i -e s/lsystemd-daemon/lsystemd/g multipathd/Makefile ./libmultipath/Makefi
 cp %{SOURCE1} .
 
 %build
-%make -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc}
+%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc}
 
 %install
-%makeinstall_std udevrulesdir=%{_udevrulesdir} unitdir=%{_systemunitdir}
+%make_install udevrulesdir=%{_udevrulesdir} unitdir=%{_systemunitdir}
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-multipathd.preset << EOF
