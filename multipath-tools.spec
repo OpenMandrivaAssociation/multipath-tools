@@ -29,6 +29,7 @@ BuildRequires:	pkgconfig(liburcu)
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(json-c)
+BuildRequires:	pkgconfig(libsystemd)
 BuildRequires:	systemd-macros
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
