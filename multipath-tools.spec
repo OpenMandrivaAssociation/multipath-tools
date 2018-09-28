@@ -14,16 +14,16 @@ Url:		http://christophe.varoqui.free.fr/
 # The source for this package was pulled from upstream's git repo.  Use the
 # following command to generate the tarball
 # curl "https://git.opensvc.com/?p=multipath-tools/.git;a=snapshot;h=refs/tags/0.7.7;sf=tgz" -o multipath-tools-0.7.7.tgz
-Source0:	%{name}-%{version}.tar.bz2
+Source0:	%{name}-%{version}.tgz
 Source1:	multipath.conf
-Patch0:		multipath-tools-0.5.0-udevrulesdir.patch
-Patch1:		multipath-tools-0.5.0-format-security.patch
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(libsystemd)
+BuildRequires:	libsystemd-macros
+BuildRequires:	systemd
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
 Conflicts:	kpartx < 0.4.8-16
@@ -39,13 +39,12 @@ are:
 - kpartx:	maps linear devmaps upon device partitions, which makes
   multipath maps partionable
 
-
 %package -n %{libmultipath}
 Summary:	libmultipath library
 Group:		System/Libraries
 Conflicts:	multipath-tools < 0.4.9-1.20121222.1
 
-%description -n	%{libmultipath}
+%description -n %{libmultipath}
 This package ships the libmultipath library, part of multipath-tools.
 
 %package -n %{libmpathpersist}
@@ -61,21 +60,19 @@ Summary:	Partition device manager for device-mapper devices
 Group:		System/Kernel and hardware
 Conflicts:	multipath-tools < 0.4.8-16
 
-%description -n	kpartx
+%description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
 %prep
-%setup -q
-%apply_patches
-sed -i -e s/lsystemd-daemon/lsystemd/g multipathd/Makefile ./libmultipath/Makefile
+%autosetup -p1
 
 cp %{SOURCE1} .
 
 %build
-%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc}
+%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc} udevrulesdir=%{_udevrulesdir} unitdir=%{_unitdir}
 
 %install
-%make_install udevrulesdir=%{_udevrulesdir} unitdir=%{_systemunitdir}
+%make_install udevrulesdir=%{_udevrulesdir} unitdir=%{_unitdir}
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-multipathd.preset << EOF
