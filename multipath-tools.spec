@@ -22,7 +22,7 @@ BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(liburcu)
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
-BuildRequires:	pkgconfig(jsoncpp)
+BuildRequires:	pkgconfig(json-c)
 BuildRequires:	pkgconfig(libsystemd)
 BuildRequires:	systemd-macros
 BuildRequires:	systemd
