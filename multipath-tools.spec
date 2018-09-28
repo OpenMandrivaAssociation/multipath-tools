@@ -22,7 +22,7 @@ BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(libsystemd)
-BuildRequires:	libsystemd-macros
+BuildRequires:	systemd-macros
 BuildRequires:	systemd
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
