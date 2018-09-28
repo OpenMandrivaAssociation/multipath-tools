@@ -91,8 +91,7 @@ rm -rf %{buildroot}/%{_lib}/libmpathpersist.so
 rm -rf %{buildroot}%{_includedir}/mpath_persist.h
 
 %files
-%doc AUTHOR README* FAQ
-%doc multipath.conf multipath.conf.annotated multipath.conf.defaults multipath.conf.synthetic
+%doc README*
 %dir %{_sysconfdir}/multipath
 %ghost %config(noreplace) %{_sysconfdir}/multipath.conf
 %{_presetdir}/86-multipathd.preset
