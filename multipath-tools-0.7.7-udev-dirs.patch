@@ -1,0 +1,23 @@
+diff -Naur multipath-tools-0.7.7/Makefile.inc multipath-tools-0.7.7.tpg/Makefile.inc
+--- multipath-tools-0.7.7/Makefile.inc	2018-05-11 08:52:41.000000000 +0000
++++ multipath-tools-0.7.7.tpg/Makefile.inc	2018-09-28 16:14:49.509966936 +0000
+@@ -52,8 +52,8 @@
+ exec_prefix	= $(prefix)
+ usr_prefix	= $(prefix)
+ bindir		= $(exec_prefix)/sbin
+-libudevdir	= $(prefix)/$(SYSTEMDPATH)/udev
+-udevrulesdir	= $(libudevdir)/rules.d
++libudevdir	= $(udevdir)
++udevrulesdir	= $(udevrulesdir)
+ multipathdir	= $(TOPDIR)/libmultipath
+ man8dir		= $(prefix)/usr/share/man/man8
+ man5dir		= $(prefix)/usr/share/man/man5
+@@ -61,7 +61,7 @@
+ syslibdir	= $(prefix)/$(LIB)
+ usrlibdir	= $(usr_prefix)/$(LIB)
+ libdir		= $(prefix)/$(LIB)/multipath
+-unitdir		= $(prefix)/$(SYSTEMDPATH)/systemd/system
++unitdir		= $(unitdir)
+ mpathpersistdir	= $(TOPDIR)/libmpathpersist
+ mpathcmddir	= $(TOPDIR)/libmpathcmd
+ thirdpartydir	= $(TOPDIR)/third-party
