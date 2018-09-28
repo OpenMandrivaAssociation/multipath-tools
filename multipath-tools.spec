@@ -178,7 +178,7 @@ touch %{buildroot}%{_sysconfdir}/multipath.conf
 %{_includedir}/libdmmp/*
 %{_mandir}/man3/dmmp_*
 %{_mandir}/man3/libdmmp.h.3.*
-%{_pkgconfdir}/libdmmp.pc
+%{_libdir}/pkgconfig//libdmmp.pc
 
 %files -n kpartx
 %{_udevrulesdir}/*kpartx.rules
