@@ -112,7 +112,7 @@ rm -rf %{buildroot}%{_includedir}/mpath_persist.h
 /%{_lib}/libmpathpersist.so.%{major}*
 
 %files -n kpartx
-%{_udevrulesdir}/kpartx.rules
+%{_udevrulesdir}/66-kpartx.rules
 /sbin/kpartx
 /lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8*
