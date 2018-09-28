@@ -30,6 +30,7 @@ BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(json-c)
 BuildRequires:	pkgconfig(libsystemd)
+BuildRequires:	systemd
 BuildRequires:	systemd-macros
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
