@@ -1,6 +1,11 @@
 %define major 0
 %define libmultipath %mklibname multipath %{major}
 %define libmpathpersist %mklibname mpathpersist %{major}
+%define libmpathcmd %mklibname mpathcmd %{major}
+%define libdmmp %mklibname dmmp 0
+%define devname %mklibname multipath-tools -d
+%define devdmmp %mklibname dmmp -d
+
 %define _disable_lto 1
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
 
@@ -24,9 +29,7 @@ BuildRequires:	pkgconfig(liburcu)
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(json-c)
-BuildRequires:	pkgconfig(libsystemd)
 BuildRequires:	systemd-macros
-BuildRequires:	systemd
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
 Conflicts:	kpartx < 0.4.8-16
@@ -58,6 +61,28 @@ Conflicts:	multipath-tools < 0.4.9-1.20121222.1
 %description -n %{libmpathpersist}
 This package ships the libmpathpersist library, part of multipath-tools.
 
+%package -n %{libmpathcmd}
+Summary:	libmpathcmd library
+Group:		System/Libraries
+
+%description -n %{libmpathcmd}
+This package ships the libmpathcmd library, part of multipath-tools.
+
+%package -n %{devname}
+Summary:	Development libraries and headers for %{name}
+Group:		Development/C
+Requires:	%{name} = %{EVRD}
+Requires:	%{libmultipath} = %{EVRD}
+Requires:	%{libmpathpersist} = %{EVRD}
+Requires:	%{libmpathcmd} = %{EVRD}
+Provides:	device-mapper-multipath-devel = %{EVRD}
+Provides:	multipath-devel = %{EVRD}
+Provides:	%{name}-devel = %{EVRD}
+
+%description -n %{devname}
+This package contains the files need to develop applications that use
+device-mapper-multipath's lbmpathpersist and libmpathcmd libraries.
+
 %package -n kpartx
 Summary:	Partition device manager for device-mapper devices
 Group:		System/Kernel and hardware
@@ -65,6 +90,26 @@ Conflicts:	multipath-tools < 0.4.8-16
 
 %description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
+
+%package -n %{libdmmp}
+Summary:	device-mapper-multipath C API library
+Group:		System/Libraries
+#Requires: json-c
+Requires:	%{name} = %{EVRD}
+
+%description -n %{libdmmp}
+This package contains the shared library for the device-mapper-multipath
+C API library.
+
+%package -n %{devdmmp}
+Summary:	device-mapper-multipath C API library headers
+Group:		Development/C
+Requires:	%{libdmmp} = %{EVRD}
+Provides:	libdmmp-devel = %{EVRD}
+
+%description -n %{devdmmp}
+This package contains the files needed to develop applications that use
+device-mapper-multipath's libdmmp C API library
 
 %prep
 %autosetup -p1
@@ -86,24 +131,23 @@ EOF
 install -d %{buildroot}%{_sysconfdir}/multipath
 touch %{buildroot}%{_sysconfdir}/multipath.conf
 
-#(tpg) not needed
-rm -rf %{buildroot}/%{_lib}/libmpathpersist.so
-rm -rf %{buildroot}%{_includedir}/mpath_persist.h
-
 %files
 %doc README*
 %dir %{_sysconfdir}/multipath
 %ghost %config(noreplace) %{_sysconfdir}/multipath.conf
+%{_udevrulesdir}/*path.rules
+%{_udevrulesdir}/*part*.rules
 %{_presetdir}/86-multipathd.preset
 %{_unitdir}/multipathd.service
 %{_unitdir}/multipathd.socket
 /sbin/multipath
 /sbin/multipathd
 /sbin/mpathpersist
-%{_mandir}/man?/multipath*
-%{_mandir}/man?/mpath*
 %dir /%{_lib}/multipath/
 /%{_lib}/multipath/*
+%{_mandir}/man?/*dmmp*
+%{_mandir}/man?/multipath*
+%{_mandir}/man?/mpath*
 
 %files -n %{libmultipath}
 /%{_lib}/libmultipath.so.%{major}*
@@ -111,8 +155,31 @@ rm -rf %{buildroot}%{_includedir}/mpath_persist.h
 %files -n %{libmpathpersist}
 /%{_lib}/libmpathpersist.so.%{major}*
 
+%files -n %{libmpathcmd}
+/%{_lib}/libmpathcmd.so.%{major}*
+
+%files -n %{libdmmp}
+/%{_lib}/libdmmp.so.%{major}*
+
+%files -n %{devname}
+/%{_lib}/libmpathpersist.so
+/%{_lib}/libmpathcmd.so
+/%{_lib}/libmultipath.so
+%{_includedir}/mpath_cmd.h
+%{_includedir}/mpath_persist.h
+%{_mandir}/man3/mpath_persistent_reserve_in.3.*
+%{_mandir}/man3/mpath_persistent_reserve_out.3.*
+
+%files -n %{devdmmp}
+/%{_lib}/libdmmp.so
+%dir %{_includedir}/libdmmp
+%{_includedir}/libdmmp/*
+%{_mandir}/man3/dmmp_*
+%{_mandir}/man3/libdmmp.h.3.*
+%{_pkgconfdir}/libdmmp.pc
+
 %files -n kpartx
-%{_udevrulesdir}/66-kpartx.rules
+%{_udevrulesdir}/*kpartx.rules
 /sbin/kpartx
 /lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8*
