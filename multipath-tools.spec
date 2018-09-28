@@ -19,6 +19,7 @@ Source1:	multipath.conf
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
+BuildRequires:	pkgconfig(liburcu)
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(libsystemd)
