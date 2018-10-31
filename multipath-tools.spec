@@ -12,7 +12,7 @@
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.7.7
-Release:	2
+Release:	3
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
@@ -131,7 +131,7 @@ EOF
 
 # tree fix up
 install -d %{buildroot}%{_sysconfdir}/multipath
-touch %{buildroot}%{_sysconfdir}/multipath.conf
+rm -rf %{buildroot}/%{_initrddir}
 
 %files
 %doc README*
