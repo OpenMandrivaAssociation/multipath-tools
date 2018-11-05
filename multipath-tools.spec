@@ -21,7 +21,7 @@ Url:		http://christophe.varoqui.free.fr/
 # curl "https://git.opensvc.com/?p=multipath-tools/.git;a=snapshot;h=refs/tags/0.7.7;sf=tgz" -o multipath-tools-0.7.7.tgz
 Source0:	%{name}-%{version}.tgz
 Source1:	multipath.conf
-Patch0:		multipath-tools-0.7.7-udev-dirs.patch
+#Patch0:		multipath-tools-0.7.7-udev-dirs.patch
 # (tpg) patches from upstream
 Patch0001: 0001-multipath-tweak-logging-style.patch
 Patch0002: 0002-multipathd-check-for-NULL-udevice-in-cli_add_path.patch
@@ -135,10 +135,10 @@ device-mapper-multipath's libdmmp C API library
 cp %{SOURCE1} .
 
 %build
-%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir}
+%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" unitdir=%{_unitdir}
 
 %install
-%make_install udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} pkgconfdir=%{_libdir}/pkgconfig
+%make_install udevdir="/lib/udev" unitdir=%{_unitdir} pkgconfdir=%{_libdir}/pkgconfig
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-multipathd.preset << EOF
