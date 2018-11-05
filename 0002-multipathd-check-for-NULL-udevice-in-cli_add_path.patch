@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Benjamin Marzinski <bmarzins@redhat.com>
+Date: Fri, 5 Oct 2018 17:20:38 -0500
+Subject: [PATCH] multipathd: check for NULL udevice in cli_add_path
+
+If cli_add_path can't get a udevice for the path, it should fail,
+instead of continuing with a NULL udevice.
+
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ multipathd/cli_handlers.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/multipathd/cli_handlers.c b/multipathd/cli_handlers.c
+index bb16472..7500080 100644
+--- a/multipathd/cli_handlers.c
++++ b/multipathd/cli_handlers.c
+@@ -720,6 +720,10 @@ cli_add_path (void * v, char ** reply, int * len, void * data)
+ 		udevice = udev_device_new_from_subsystem_sysname(udev,
+ 								 "block",
+ 								 param);
++		if (!udevice) {
++			condlog(0, "%s: can't find path", param);
++			return 1;
++		}
+ 		conf = get_multipath_config();
+ 		pthread_cleanup_push(put_multipath_config, conf);
+ 		r = store_pathinfo(vecs->pathvec, conf,
+-- 
+2.7.4
+
