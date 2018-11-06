@@ -18,10 +18,10 @@ Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
 # The source for this package was pulled from upstream's git repo.  Use the
 # following command to generate the tarball
-# curl "https://git.opensvc.com/?p=multipath-tools/.git;a=snapshot;h=refs/tags/0.7.7;sf=tgz" -o multipath-tools-0.7.7.tgz
+# curl "https://git.opensvc.com/?p=multipath-tools/.git;a=snapshot;h=refs/tags/0.7.8;sf=tgz" -o multipath-tools-0.7.8.tgz
 Source0:	%{name}-%{version}.tgz
 Source1:	multipath.conf
-#Patch0:		multipath-tools-0.7.7-udev-dirs.patch
+
 # (tpg) patches from upstream
 Patch0001: 0001-multipath-tweak-logging-style.patch
 Patch0002: 0002-multipathd-check-for-NULL-udevice-in-cli_add_path.patch
@@ -37,6 +37,7 @@ Patch0011: 0011-RH-add-mpathconf.patch
 Patch0012: 0012-RH-add-wwids-from-kernel-cmdline-mpath.wwids-with-A.patch
 Patch0013: 0013-RH-warn-on-invalid-regex-instead-of-failing.patch
 Patch0014: 0014-RH-reset-default-find_mutipaths-value-to-off.patch
+Patch0100:	multipath-tools-0.7.7-udev-dirs.patch
 
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
@@ -48,6 +49,7 @@ BuildRequires:	pkgconfig(json-c)
 BuildRequires:	pkgconfig(libsystemd)
 BuildRequires:	systemd
 BuildRequires:	systemd-macros
+
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
 Conflicts:	kpartx < 0.4.8-16
@@ -135,10 +137,10 @@ device-mapper-multipath's libdmmp C API library
 cp %{SOURCE1} .
 
 %build
-%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" unitdir=%{_unitdir}
+%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir}
 
 %install
-%make_install udevdir="/lib/udev" unitdir=%{_unitdir} pkgconfdir=%{_libdir}/pkgconfig
+%make_install udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} pkgconfdir=%{_libdir}/pkgconfig
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-multipathd.preset << EOF
