@@ -11,25 +11,11 @@ too.
 
 Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
 ---
- Makefile.inc        | 2 +-
  kpartx/kpartx.rules | 2 +-
  multipath/Makefile  | 4 ++--
  multipath/main.c    | 2 +-
  4 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/Makefile.inc b/Makefile.inc
-index a83f02c..b86cba6 100644
---- a/Makefile.inc
-+++ b/Makefile.inc
-@@ -51,7 +51,7 @@ endif
- prefix		=
- exec_prefix	= $(prefix)
- usr_prefix	= $(prefix)
--bindir		= $(exec_prefix)/sbin
-+bindir		= $(exec_prefix)/usr/sbin
- libudevdir	= $(prefix)/$(SYSTEMDPATH)/udev
- udevrulesdir	= $(libudevdir)/rules.d
- multipathdir	= $(TOPDIR)/libmultipath
 diff --git a/kpartx/kpartx.rules b/kpartx/kpartx.rules
 index 8f99049..8a3a171 100644
 --- a/kpartx/kpartx.rules

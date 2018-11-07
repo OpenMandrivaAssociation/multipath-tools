@@ -4,7 +4,7 @@ diff -Naur multipath-tools-0.7.8/Makefile.inc multipath-tools-0.7.8.tpg/Makefile
 @@ -52,8 +52,8 @@
  exec_prefix	= $(prefix)
  usr_prefix	= $(prefix)
- bindir		= $(exec_prefix)/usr/sbin
+ bindir		= $(exec_prefix)/sbin
 -libudevdir	= $(prefix)/$(SYSTEMDPATH)/udev
 -udevrulesdir	= $(libudevdir)/rules.d
 +libudevdir	= $(udevdir)
