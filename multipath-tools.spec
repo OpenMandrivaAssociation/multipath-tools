@@ -163,6 +163,7 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_sbindir}/multipath
 %{_sbindir}/multipathd
 %{_sbindir}/mpathpersist
+%{_sbindir}/mpathconf
 %dir /%{_lib}/multipath/
 /%{_lib}/multipath/*
 %{_mandir}/man?/*dmmp*
