@@ -204,6 +204,6 @@ rm -rf %{buildroot}/%{_initrddir}
 
 %files -n kpartx
 %{_udevrulesdir}/*kpartx.rules
-%{_sbindir}/kpartx
+/sbin/kpartx
 /lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8*
