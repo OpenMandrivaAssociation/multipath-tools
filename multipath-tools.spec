@@ -142,6 +142,9 @@ cp %{SOURCE1} .
 %install
 %make_install udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} pkgconfdir=%{_libdir}/pkgconfig
 
+mkdir -p %{buildroot}/sbin
+mv %{buildroot}%{_sbindir}/kpartx %{buildroot}/sbin/
+
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-multipathd.preset << EOF
 enable multipathd.socket
@@ -162,6 +165,7 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_unitdir}/multipathd.socket
 %{_sbindir}/multipath
 %{_sbindir}/multipathd
+%{_sbindir}/mpathconf
 %{_sbindir}/mpathpersist
 %dir /%{_lib}/multipath/
 /%{_lib}/multipath/*
