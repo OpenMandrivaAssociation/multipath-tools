@@ -160,9 +160,9 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_presetdir}/86-multipathd.preset
 %{_unitdir}/multipathd.service
 %{_unitdir}/multipathd.socket
-/sbin/multipath
-/sbin/multipathd
-/sbin/mpathpersist
+%{_sbindir}/multipath
+%{_sbindir}/multipathd
+%{_sbindir}/mpathpersist
 %dir /%{_lib}/multipath/
 /%{_lib}/multipath/*
 %{_mandir}/man?/*dmmp*
