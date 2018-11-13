@@ -12,7 +12,7 @@
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.7.8
-Release:	2
+Release:	3
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
