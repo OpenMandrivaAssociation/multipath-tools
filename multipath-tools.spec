@@ -11,8 +11,8 @@
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
-Version:	0.7.8
-Release:	3
+Version:	0.8.0
+Release:	1
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
@@ -23,12 +23,6 @@ Source0:	%{name}-%{version}.tgz
 Source1:	multipath.conf
 
 # (tpg) patches from upstream
-Patch0001:	0001-multipath-tweak-logging-style.patch
-Patch0002:	0002-multipathd-check-for-NULL-udevice-in-cli_add_path.patch
-Patch0003:	0003-libmultipath-remove-max_fds-code-duplication.patch
-Patch0004:	0004-multipathd-set-return-code-for-multipathd-commands.patch
-Patch0005:	0005-mpathpersist-fix-registration-rollback-issue.patch
-Patch0006:	0006-libmultipath-timeout-on-unresponsive-tur-thread.patch
 Patch0007:	0007-RH-fixup-udev-rules-for-redhat.patch
 Patch0008:	0008-RH-Remove-the-property-blacklist-exception-builtin.patch
 Patch0009:	0009-RH-don-t-start-without-a-config-file.patch

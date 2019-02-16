@@ -1,30 +1,6 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Benjamin Marzinski <bmarzins@redhat.com>
-Date: Fri, 17 Oct 2014 11:20:34 -0500
-Subject: [PATCH] RH: add wwids from kernel cmdline mpath.wwids with -A
-
-This patch adds another option to multipath, "-A", which reads
-/proc/cmdline for mpath.wwid=<WWID> options, and adds any wwids it finds
-to /etc/multipath/wwids.  While this isn't usually important during
-normal operation, since these wwids should already be added, it can be
-helpful during installation, to make sure that multipath can claim
-devices as its own, before LVM or something else makes use of them.  The
-patch also execs "/sbin/multipath -A" before running multipathd in
-multipathd.service
-
-Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
----
- libmultipath/wwids.c          | 44 +++++++++++++++++++++++++++++++++++++++++++
- libmultipath/wwids.h          |  1 +
- multipath/main.c              | 10 ++++++++--
- multipath/multipath.8         |  5 ++++-
- multipathd/multipathd.service |  1 +
- 5 files changed, 58 insertions(+), 3 deletions(-)
-
-diff --git a/libmultipath/wwids.c b/libmultipath/wwids.c
-index 53e7951..39e08cd 100644
---- a/libmultipath/wwids.c
-+++ b/libmultipath/wwids.c
+diff -up multipath-tools-0.8.0/libmultipath/wwids.c.6~ multipath-tools-0.8.0/libmultipath/wwids.c
+--- multipath-tools-0.8.0/libmultipath/wwids.c.6~	2019-02-14 18:55:29.000000000 +0100
++++ multipath-tools-0.8.0/libmultipath/wwids.c	2019-02-16 15:27:10.504249304 +0100
 @@ -443,3 +443,47 @@ int op ## _wwid(const char *wwid) \
  declare_failed_wwid_op(is_failed, false)
  declare_failed_wwid_op(mark_failed, true)
@@ -73,10 +49,9 @@ index 53e7951..39e08cd 100644
 +	}
 +	return ret;
 +}
-diff --git a/libmultipath/wwids.h b/libmultipath/wwids.h
-index 0c6ee54..e32a0b0 100644
---- a/libmultipath/wwids.h
-+++ b/libmultipath/wwids.h
+diff -up multipath-tools-0.8.0/libmultipath/wwids.h.6~ multipath-tools-0.8.0/libmultipath/wwids.h
+--- multipath-tools-0.8.0/libmultipath/wwids.h.6~	2019-02-14 18:55:29.000000000 +0100
++++ multipath-tools-0.8.0/libmultipath/wwids.h	2019-02-16 15:27:10.504249304 +0100
 @@ -17,6 +17,7 @@ int remember_wwid(char *wwid);
  int check_wwids_file(char *wwid, int write_wwid);
  int remove_wwid(char *wwid);
@@ -85,11 +60,21 @@ index 0c6ee54..e32a0b0 100644
  
  enum {
  	WWID_IS_NOT_FAILED = 0,
-diff --git a/multipath/main.c b/multipath/main.c
-index ffa5b22..ccb6091 100644
---- a/multipath/main.c
-+++ b/multipath/main.c
-@@ -120,7 +120,7 @@ usage (char * progname)
+diff -up multipath-tools-0.8.0/multipathd/multipathd.service.6~ multipath-tools-0.8.0/multipathd/multipathd.service
+--- multipath-tools-0.8.0/multipathd/multipathd.service.6~	2019-02-16 15:27:10.502249278 +0100
++++ multipath-tools-0.8.0/multipathd/multipathd.service	2019-02-16 15:27:10.505249318 +0100
+@@ -15,6 +15,7 @@ Type=notify
+ NotifyAccess=main
+ LimitCORE=infinity
+ ExecStartPre=-/sbin/modprobe -a scsi_dh_alua scsi_dh_emc scsi_dh_rdac dm-multipath
++ExecStartPre=-/sbin/multipath -A
+ ExecStart=/sbin/multipathd -d -s
+ ExecReload=/sbin/multipathd reconfigure
+ TasksMax=infinity
+diff -up multipath-tools-0.8.0/multipath/main.c.6~ multipath-tools-0.8.0/multipath/main.c
+--- multipath-tools-0.8.0/multipath/main.c.6~	2019-02-14 18:55:29.000000000 +0100
++++ multipath-tools-0.8.0/multipath/main.c	2019-02-16 15:28:30.001304392 +0100
+@@ -133,7 +133,7 @@ usage (char * progname)
  {
  	fprintf (stderr, VERSION_STRING);
  	fprintf (stderr, "Usage:\n");
@@ -98,7 +83,7 @@ index ffa5b22..ccb6091 100644
  	fprintf (stderr, "  %s -l|-ll|-f [-v lvl] [-b fil] [-R num] [dev]\n", progname);
  	fprintf (stderr, "  %s -F [-v lvl] [-R num]\n", progname);
  	fprintf (stderr, "  %s [-t|-T]\n", progname);
-@@ -134,6 +134,8 @@ usage (char * progname)
+@@ -147,6 +147,8 @@ usage (char * progname)
  		"  -f      flush a multipath device map\n"
  		"  -F      flush all multipath device maps\n"
  		"  -a      add a device wwid to the wwids file\n"
@@ -107,8 +92,8 @@ index ffa5b22..ccb6091 100644
  		"  -c      check if a device should be a path in a multipath device\n"
  		"  -C      check if a multipath device has usable paths\n"
  		"  -q      allow queue_if_no_path when multipathd is not running\n"
-@@ -868,7 +870,7 @@ main (int argc, char *argv[])
- 		exit(1);
+@@ -870,7 +872,7 @@ main (int argc, char *argv[])
+ 		exit(RTVL_FAIL);
  	multipath_conf = conf;
  	conf->retrigger_tries = 0;
 -	while ((arg = getopt(argc, argv, ":adcChl::FfM:v:p:b:BrR:itTquUwW")) != EOF ) {
@@ -116,7 +101,7 @@ index ffa5b22..ccb6091 100644
  		switch(arg) {
  		case 1: printf("optarg : %s\n",optarg);
  			break;
-@@ -938,6 +940,10 @@ main (int argc, char *argv[])
+@@ -940,6 +942,10 @@ main (int argc, char *argv[])
  		case 'T':
  			cmd = CMD_DUMP_CONFIG;
  			break;
@@ -126,21 +111,11 @@ index ffa5b22..ccb6091 100644
 +			exit(0);
  		case 'h':
  			usage(argv[0]);
- 			exit(0);
-diff --git a/multipath/multipath.8 b/multipath/multipath.8
-index b5e5292..5bd5229 100644
---- a/multipath/multipath.8
-+++ b/multipath/multipath.8
-@@ -25,7 +25,7 @@ multipath \- Device mapper target autoconfig.
- .RB [\| \-b\ \c
- .IR bindings_file \|]
- .RB [\| \-d \|]
--.RB [\| \-h | \-l | \-ll | \-f | \-t | \-T | \-F | \-B | \-c | \-C | \-q | \-r | \-i | \-a | \-u | \-U | \-w | \-W \|]
-+.RB [\| \-h | \-l | \-ll | \-f | \-t | \-T | \-F | \-B | \-c | \-C | \-q | \-r | \-i | \-a | \-A | \-u | \-U | \-w | \-W \|]
- .RB [\| \-p\ \c
- .IR failover | multibus | group_by_serial | group_by_prio | group_by_node_name \|]
- .RB [\| \-R\ \c
-@@ -141,6 +141,9 @@ Add the WWID for the specified device to the WWIDs file.
+ 			exit(RTVL_OK);
+diff -up multipath-tools-0.8.0/multipath/multipath.8.6~ multipath-tools-0.8.0/multipath/multipath.8
+--- multipath-tools-0.8.0/multipath/multipath.8.6~	2019-02-14 18:55:29.000000000 +0100
++++ multipath-tools-0.8.0/multipath/multipath.8	2019-02-16 15:27:10.505249318 +0100
+@@ -167,6 +167,9 @@ itself doesn't attempt to do I/O on the
  Check if the device specified in the program environment should be
  a path in a multipath device.
  .
@@ -150,18 +125,3 @@ index b5e5292..5bd5229 100644
  .TP
  .B \-U
  Check if the device specified in the program environment is a multipath device
-diff --git a/multipathd/multipathd.service b/multipathd/multipathd.service
-index 17434ce..0fbcc46 100644
---- a/multipathd/multipathd.service
-+++ b/multipathd/multipathd.service
-@@ -15,6 +15,7 @@ Type=notify
- NotifyAccess=main
- LimitCORE=infinity
- ExecStartPre=-/sbin/modprobe -a scsi_dh_alua scsi_dh_emc scsi_dh_rdac dm-multipath
-+ExecStartPre=-/sbin/multipath -A
- ExecStart=/sbin/multipathd -d -s
- ExecReload=/sbin/multipathd reconfigure
- TasksMax=infinity
--- 
-2.7.4
-
