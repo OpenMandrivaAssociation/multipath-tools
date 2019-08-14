@@ -33,6 +33,7 @@ Patch0012:	0012-RH-add-wwids-from-kernel-cmdline-mpath.wwids-with-A.patch
 Patch0013:	0013-RH-warn-on-invalid-regex-instead-of-failing.patch
 Patch0014:	0014-RH-reset-default-find_mutipaths-value-to-off.patch
 Patch0100:	multipath-tools-0.7.7-udev-dirs.patch
+Patch0101:	multipath-tools-0.7.5-respect-flags.patch
 
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel

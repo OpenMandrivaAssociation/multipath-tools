@@ -1,0 +1,21 @@
+diff --git a/Makefile.inc b/Makefile.inc
+index c397763..445309a 100644
+--- a/Makefile.inc
++++ b/Makefile.inc
+@@ -101,12 +101,13 @@ OPTFLAGS	+= -Wextra -Wstrict-prototypes -Wformat=2 -Werror=implicit-int \
+ 		   -Wno-unused-parameter $(ERROR_DISCARDED_QUALIFIERS) \
+ 		   -Werror=cast-qual
+ 
+-CFLAGS		:= $(OPTFLAGS) -DBIN_DIR=\"$(bindir)\" -DLIB_STRING=\"${LIB}\" -DRUN_DIR=\"${RUN}\" \
+-		   -MMD -MP $(CFLAGS)
++CFLAGS		?= $(OPTFLAGS)
++CFLAGS		+= -DBIN_DIR=\"$(bindir)\" -DLIB_STRING=\"${LIB}\" -DRUN_DIR=\"${RUN}\" \
++		   -MMD -MP
+ BIN_CFLAGS	= -fPIE -DPIE
+ LIB_CFLAGS	= -fPIC
+ SHARED_FLAGS	= -shared
+-LDFLAGS		= -Wl,-z,relro -Wl,-z,now
++LDFLAGS		+= -Wl,-z,relro -Wl,-z,now
+ BIN_LDFLAGS	= -pie
+ 
+ # Check whether a function with name $1 has been declared in header file $2.
