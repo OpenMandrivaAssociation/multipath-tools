@@ -8,6 +8,7 @@
 
 %define _disable_lto 1
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
+%define systemd_ver 242
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
@@ -131,7 +132,7 @@ device-mapper-multipath's libdmmp C API library
 cp %{SOURCE1} .
 
 %build
-%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir}
+%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver}
 
 %install
 %make_install udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} pkgconfdir=%{_libdir}/pkgconfig
