@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 64b336a47365eb0ee91a917d6b98c6c695775a36 Mon Sep 17 00:00:00 2001
 From: Benjamin Marzinski <bmarzins@redhat.com>
 Date: Thu, 16 Oct 2014 15:49:01 -0500
 Subject: [PATCH] RH: add mpathconf
@@ -14,17 +14,17 @@ Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
 ---
  libmultipath/config.c |   2 +
  multipath/Makefile    |   5 +
- multipath/mpathconf   | 464 ++++++++++++++++++++++++++++++++++++++++++++++++++
- multipath/mpathconf.8 | 119 +++++++++++++
+ multipath/mpathconf   | 464 ++++++++++++++++++++++++++++++++++++++++++
+ multipath/mpathconf.8 | 119 +++++++++++
  4 files changed, 590 insertions(+)
  create mode 100644 multipath/mpathconf
  create mode 100644 multipath/mpathconf.8
 
 diff --git a/libmultipath/config.c b/libmultipath/config.c
-index 6a9340a..bfd07e3 100644
+index c36bc69c..fcd17dd4 100644
 --- a/libmultipath/config.c
 +++ b/libmultipath/config.c
-@@ -748,6 +748,8 @@ load_config (char * file)
+@@ -746,6 +746,8 @@ load_config (char * file)
  		factorize_hwtable(conf->hwtable, builtin_hwtable_size, file);
  	} else {
  		condlog(0, "/etc/multipath.conf does not exist, blacklisting all devices.");
@@ -34,7 +34,7 @@ index 6a9340a..bfd07e3 100644
  			conf->blist_devnode = vector_alloc();
  			if (!conf->blist_devnode) {
 diff --git a/multipath/Makefile b/multipath/Makefile
-index b9bbb3c..e720c7f 100644
+index b9bbb3cf..e720c7f6 100644
 --- a/multipath/Makefile
 +++ b/multipath/Makefile
 @@ -18,10 +18,12 @@ $(EXEC): $(OBJS) $(multipathdir)/libmultipath.so $(mpathcmddir)/libmpathcmd.so
@@ -69,7 +69,7 @@ index b9bbb3c..e720c7f 100644
  	$(RM) core *.o $(EXEC) *.gz
 diff --git a/multipath/mpathconf b/multipath/mpathconf
 new file mode 100644
-index 0000000..e839134
+index 00000000..e8391347
 --- /dev/null
 +++ b/multipath/mpathconf
 @@ -0,0 +1,464 @@
@@ -539,7 +539,7 @@ index 0000000..e839134
 +fi
 diff --git a/multipath/mpathconf.8 b/multipath/mpathconf.8
 new file mode 100644
-index 0000000..5b7ae0c
+index 00000000..5b7ae0c3
 --- /dev/null
 +++ b/multipath/mpathconf.8
 @@ -0,0 +1,119 @@
@@ -663,5 +663,5 @@ index 0000000..5b7ae0c
 +.SH AUTHOR
 +Benjamin Marzinski <bmarzins@redhat.com>
 -- 
-2.7.4
+2.17.2
 

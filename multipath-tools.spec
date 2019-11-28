@@ -8,11 +8,11 @@
 
 %define _disable_lto 1
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
-%define systemd_ver 242
+%define systemd_ver 243
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
-Version:	0.8.0
+Version:	0.8.3
 Release:	1
 License:	GPLv2
 Group:		System/Kernel and hardware
@@ -20,20 +20,20 @@ Url:		http://christophe.varoqui.free.fr/
 # The source for this package was pulled from upstream's git repo.  Use the
 # following command to generate the tarball
 # curl "https://git.opensvc.com/?p=multipath-tools/.git;a=snapshot;h=refs/tags/0.7.8;sf=tgz" -o multipath-tools-0.7.8.tgz
-Source0:	%{name}-%{version}.tgz
+Source0:	%{name}-%{version}.tar.tgz
 Source1:	multipath.conf
 
 # (tpg) patches from upstream
-Patch0007:	0007-RH-fixup-udev-rules-for-redhat.patch
-Patch0008:	0008-RH-Remove-the-property-blacklist-exception-builtin.patch
-Patch0009:	0009-RH-don-t-start-without-a-config-file.patch
-Patch0010:	0010-RH-use-rpm-optflags-if-present.patch
-Patch0011:	0011-RH-add-mpathconf.patch
-Patch0012:	0012-RH-add-wwids-from-kernel-cmdline-mpath.wwids-with-A.patch
-Patch0013:	0013-RH-warn-on-invalid-regex-instead-of-failing.patch
-Patch0014:	0014-RH-reset-default-find_mutipaths-value-to-off.patch
-Patch0100:	multipath-tools-0.7.7-udev-dirs.patch
-Patch0101:	multipath-tools-0.7.5-respect-flags.patch
+Patch0021:	0021-RH-fixup-udev-rules-for-redhat.patch
+Patch0022:	0022-RH-Remove-the-property-blacklist-exception-builtin.patch
+Patch0023:	0023-RH-don-t-start-without-a-config-file.patch
+Patch0024:	0024-RH-use-rpm-optflags-if-present.patch
+Patch0025:	0025-RH-add-mpathconf.patch
+Patch0026:	0026-RH-add-wwids-from-kernel-cmdline-mpath.wwids-with-A.patch
+Patch0027:	0027-RH-warn-on-invalid-regex-instead-of-failing.patch
+Patch0028:	0028-RH-reset-default-find_mutipaths-value-to-off.patch
+Patch0029:	0029-RH-Fix-nvme-compilation-warning.patch
+Patch0030:	0030-RH-attempt-to-get-ANA-info-via-sysfs-first.patch
 
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
@@ -43,9 +43,9 @@ BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(json-c)
 BuildRequires:	pkgconfig(libsystemd)
-BuildRequires:	systemd
 BuildRequires:	systemd-macros
-
+BuildRequires:	pkgconfig(liburcu)
+Requires:	userspace-rcu
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
 Conflicts:	kpartx < 0.4.8-16
