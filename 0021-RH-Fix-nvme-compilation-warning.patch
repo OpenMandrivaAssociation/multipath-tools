@@ -1,4 +1,4 @@
-From 938d211bf5e8d96849bfbf4d2707507adc7f718e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Benjamin Marzinski <bmarzins@redhat.com>
 Date: Fri, 25 Jan 2019 14:54:56 -0600
 Subject: [PATCH] RH: Fix nvme compilation warning
@@ -23,4 +23,3 @@ index adb192b6..bfd10ef8 100644
  			  const struct argconfig_commandline_options *options);
 -- 
 2.17.2
-

@@ -8,32 +8,18 @@
 
 %define _disable_lto 1
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
-%define systemd_ver 243
+%define systemd_ver %(pkg-config --modversion systemd 2> /dev/null)
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
-Version:	0.8.3
+Version:	0.8.5
 Release:	1
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
-# The source for this package was pulled from upstream's git repo.  Use the
-# following command to generate the tarball
-# curl "https://git.opensvc.com/?p=multipath-tools/.git;a=snapshot;h=refs/tags/0.7.8;sf=tgz" -o multipath-tools-0.7.8.tgz
-Source0:	%{name}-%{version}.tar.tgz
+Source0:	https://github.com/opensvc/multipath-tools/archive/%{version}.tar.gz
 Source1:	multipath.conf
-
-# (tpg) patches from upstream
-Patch0021:	0021-RH-fixup-udev-rules-for-redhat.patch
-Patch0022:	0022-RH-Remove-the-property-blacklist-exception-builtin.patch
-Patch0023:	0023-RH-don-t-start-without-a-config-file.patch
-Patch0024:	0024-RH-use-rpm-optflags-if-present.patch
-Patch0025:	0025-RH-add-mpathconf.patch
-Patch0026:	0026-RH-add-wwids-from-kernel-cmdline-mpath.wwids-with-A.patch
-Patch0027:	0027-RH-warn-on-invalid-regex-instead-of-failing.patch
-Patch0028:	0028-RH-reset-default-find_mutipaths-value-to-off.patch
-Patch0029:	0029-RH-Fix-nvme-compilation-warning.patch
-Patch0030:	0030-RH-attempt-to-get-ANA-info-via-sysfs-first.patch
+Patch0021:      0021-RH-Fix-nvme-compilation-warning.patch
 
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
@@ -43,9 +29,8 @@ BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(json-c)
 BuildRequires:	pkgconfig(libsystemd)
-BuildRequires:	systemd-macros
-BuildRequires:	pkgconfig(liburcu)
-Requires:	userspace-rcu
+BuildRequires:	systemd
+
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
 Conflicts:	kpartx < 0.4.8-16
@@ -133,10 +118,20 @@ device-mapper-multipath's libdmmp C API library
 cp %{SOURCE1} .
 
 %build
-%make_build -j1 BUILD="glibc" OPTFLAGS="%{optflags}" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver}
+%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver}
 
 %install
-%make_install udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} pkgconfdir=%{_libdir}/pkgconfig
+%make_install \
+	syslibdir=%{_libdir} \
+	usrlibdir=%{_libdir} \
+	libdir=%{_libdir}/multipath \
+	libudevdir="/lib/udev" \
+	udevrulesdir="%{_udevrulesdir}" \
+	unitdir=%{_unitdir} \
+	includedir=%{_includedir} \
+	pkgconfdir=%{_libdir}/pkgconfig
+
+rm -rf %{buildroot}%{_sysconfig}/hotplug.d
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-multipathd.preset << EOF
@@ -158,43 +153,41 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_unitdir}/multipathd.socket
 /sbin/multipath
 /sbin/multipathd
-/sbin/mpathconf
 /sbin/mpathpersist
-/sbin/mpathconf
-%dir /%{_lib}/multipath/
-/%{_lib}/multipath/*
+%dir %{_libdir}/multipath/
+%{_libdir}/multipath/*
 %{_mandir}/man?/*dmmp*
 %{_mandir}/man?/multipath*
 %{_mandir}/man?/mpath*
 
 %files -n %{libmultipath}
-/%{_lib}/libmultipath.so.%{major}*
+%{_libdir}/libmultipath.so.%{major}{,.*}
 
 %files -n %{libmpathpersist}
-/%{_lib}/libmpathpersist.so.%{major}*
+%{_libdir}/libmpathpersist.so.%{major}*
 
 %files -n %{libmpathcmd}
-/%{_lib}/libmpathcmd.so.%{major}*
+%{_libdir}/libmpathcmd.so.%{major}*
 
 %files -n %{libdmmp}
-/%{_lib}/libdmmp.so.%{major}*
+%{_libdir}/libdmmp.so.%{major}*
 
 %files -n %{devname}
-/%{_lib}/libmpathpersist.so
-/%{_lib}/libmpathcmd.so
-/%{_lib}/libmultipath.so
+%{_libdir}/libmpathpersist.so
+%{_libdir}/libmpathcmd.so
+%{_libdir}/libmultipath.so
 %{_includedir}/mpath_cmd.h
 %{_includedir}/mpath_persist.h
 %{_mandir}/man3/mpath_persistent_reserve_in.3.*
 %{_mandir}/man3/mpath_persistent_reserve_out.3.*
 
 %files -n %{devdmmp}
-/%{_lib}/libdmmp.so
+%{_libdir}/libdmmp.so
 %dir %{_includedir}/libdmmp
 %{_includedir}/libdmmp/*
 %{_mandir}/man3/dmmp_*
 %{_mandir}/man3/libdmmp.h.3.*
-%{_libdir}/pkgconfig//libdmmp.pc
+%{_libdir}/pkgconfig/libdmmp.pc
 
 %files -n kpartx
 %{_udevrulesdir}/*kpartx.rules
