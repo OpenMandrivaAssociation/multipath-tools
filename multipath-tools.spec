@@ -119,7 +119,7 @@ cp %{SOURCE1} .
 
 %build
 %set_build_flags
-%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" usr_prefix=%{_prefix} LIB=%{_lib} RUN=%{_rundir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} SYSTEMDPATH="lib" libdir=%{_libdir}
+%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" usr_prefix=%{_prefix} LIB=%{_lib} RUN=%{_rundir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} SYSTEMDPATH="lib"
 
 
 %install
