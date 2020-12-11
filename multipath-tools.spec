@@ -13,13 +13,13 @@
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.8.5
-Release:	1
+Release:	2
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
 Source0:	https://github.com/opensvc/multipath-tools/archive/%{version}.tar.gz
 Source1:	multipath.conf
-Patch0021:      0021-RH-Fix-nvme-compilation-warning.patch
+Patch0021:	0021-RH-Fix-nvme-compilation-warning.patch
 
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
@@ -118,10 +118,13 @@ device-mapper-multipath's libdmmp C API library
 cp %{SOURCE1} .
 
 %build
-%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver}
+%set_build_flags
+%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" usr_prefix=%{_prefix} LIB=%{_lib} RUN=%{_rundir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} SYSTEMDPATH="lib" libdir=%{_libdir}
+
 
 %install
 %make_install \
+	usr_prefix=%{_prefix} \
 	syslibdir=%{_libdir} \
 	usrlibdir=%{_libdir} \
 	libdir=%{_libdir}/multipath \
@@ -141,6 +144,15 @@ EOF
 # tree fix up
 install -d %{buildroot}%{_sysconfdir}/multipath
 rm -rf %{buildroot}/%{_initrddir}
+
+%post
+%systemd_post multipathd.socket
+
+%preun
+%systemd_preun multipathd.service
+
+%postun
+%systemd_postun_with_restart multipathd.service
 
 %files
 %doc README*
