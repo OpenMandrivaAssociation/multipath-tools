@@ -19,8 +19,8 @@ Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
 Source0:	https://github.com/opensvc/multipath-tools/archive/%{version}.tar.gz
 Source1:	multipath.conf
-Patch0021:	0021-RH-Fix-nvme-compilation-warning.patch
-
+Patch1:		0021-RH-Fix-nvme-compilation-warning.patch
+Patch2:		multipath-tools-0.8.5-respect-flags.patch
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
 BuildRequires:	readline-devel
