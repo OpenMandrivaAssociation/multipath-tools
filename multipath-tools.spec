@@ -6,6 +6,7 @@
 %define devname %mklibname multipath-tools -d
 %define devdmmp %mklibname dmmp -d
 
+%define _disable_ld_no_undefined 1
 %define _disable_lto 1
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
 %define systemd_ver %(pkg-config --modversion systemd 2> /dev/null)
@@ -19,11 +20,11 @@ Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
 Source0:	https://github.com/opensvc/multipath-tools/archive/%{version}.tar.gz
 Source1:	multipath.conf
-Patch0021:	0021-RH-Fix-nvme-compilation-warning.patch
-
+Patch1:		0021-RH-Fix-nvme-compilation-warning.patch
+Patch2:		multipath-tools-0.8.5-respect-flags.patch
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
-BuildRequires:	readline-devel
+BuildRequires:	pkgconfig(readline)
 BuildRequires:	pkgconfig(liburcu)
 BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
@@ -119,12 +120,10 @@ cp %{SOURCE1} .
 
 %build
 %set_build_flags
-%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_lib} RUN=%{_rundir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} SYSTEMDPATH="lib"
-
+%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_libdir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} -j1
 
 %install
 %make_install \
-	usr_prefix=%{_prefix} \
 	syslibdir=%{_libdir} \
 	usrlibdir=%{_libdir} \
 	libdir=%{_libdir}/multipath \
