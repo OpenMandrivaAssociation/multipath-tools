@@ -6,6 +6,7 @@
 %define devname %mklibname multipath-tools -d
 %define devdmmp %mklibname dmmp -d
 
+%define _disable_ld_no_undefined 1
 %define _disable_lto 1
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
 %define systemd_ver %(pkg-config --modversion systemd 2> /dev/null)
@@ -119,7 +120,7 @@ cp %{SOURCE1} .
 
 %build
 %set_build_flags
-%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_lib} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} -j1
+%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_libdir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} -j1
 
 %install
 %make_install \
