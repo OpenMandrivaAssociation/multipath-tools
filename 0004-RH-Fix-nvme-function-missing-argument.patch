@@ -1,7 +1,10 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Benjamin Marzinski <bmarzins@redhat.com>
 Date: Fri, 25 Jan 2019 14:54:56 -0600
-Subject: [PATCH] RH: Fix nvme compilation warning
+Subject: [PATCH] RH: Fix nvme function missing argument
+
+A future patch will change the compilation options to error when
+function declarations have unspecified arguments.
 
 Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
 ---
@@ -21,5 +24,3 @@ index adb192b6..bfd10ef8 100644
  void argconfig_append_usage(const char *str);
  void argconfig_print_help(const char *program_desc,
  			  const struct argconfig_commandline_options *options);
--- 
-2.17.2

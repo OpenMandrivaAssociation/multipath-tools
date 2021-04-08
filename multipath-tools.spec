@@ -2,6 +2,7 @@
 %define libmultipath %mklibname multipath %{major}
 %define libmpathpersist %mklibname mpathpersist %{major}
 %define libmpathcmd %mklibname mpathcmd %{major}
+%define libmpathvalid %mklibname mpathvalid %{major}
 %define libdmmp %mklibname dmmp 0
 %define devname %mklibname multipath-tools -d
 %define devdmmp %mklibname dmmp -d
@@ -13,15 +14,23 @@
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
-Version:	0.8.5
-Release:	2
+Version:	0.8.6
+Release:	1
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
 Source0:	https://github.com/opensvc/multipath-tools/archive/%{version}.tar.gz
 Source1:	multipath.conf
-Patch1:		0021-RH-Fix-nvme-compilation-warning.patch
-Patch2:		multipath-tools-0.8.5-respect-flags.patch
+Patch1:		0001-RH-fixup-udev-rules-for-redhat.patch
+Patch2:		0002-RH-Remove-the-property-blacklist-exception-builtin.patch
+Patch3:		0003-RH-don-t-start-without-a-config-file.patch
+Patch4:		0004-RH-Fix-nvme-function-missing-argument.patch
+Patch5:		0005-RH-use-rpm-optflags-if-present.patch
+Patch6:		0006-RH-add-mpathconf.patch
+Patch7:		0007-RH-add-wwids-from-kernel-cmdline-mpath.wwids-with-A.patch
+Patch8:		0008-RH-reset-default-find_mutipaths-value-to-off.patch
+Patch9:		0009-RH-attempt-to-get-ANA-info-via-sysfs-first.patch
+Patch10:	0010-RH-make-parse_vpd_pg83-match-scsi_id-output.patch
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
 BuildRequires:	pkgconfig(readline)
@@ -35,6 +44,7 @@ BuildRequires:	systemd
 Requires:	dmsetup
 Requires:	kpartx = %{EVRD}
 Conflicts:	kpartx < 0.4.8-16
+%systemd_requires
 
 %description
 This package provides the tools to manage multipathed devices by
@@ -70,6 +80,13 @@ Group:		System/Libraries
 %description -n %{libmpathcmd}
 This package ships the libmpathcmd library, part of multipath-tools.
 
+%package -n %{libmpathvalid}
+Summary:	libmpathvalid library
+Group:		System/Libraries
+
+%description -n %{libmpathvalid}
+This package ships the libmpathvalid library, part of multipath-tools.
+
 %package -n %{devname}
 Summary:	Development libraries and headers for %{name}
 Group:		Development/C
@@ -77,6 +94,7 @@ Requires:	%{name} = %{EVRD}
 Requires:	%{libmultipath} = %{EVRD}
 Requires:	%{libmpathpersist} = %{EVRD}
 Requires:	%{libmpathcmd} = %{EVRD}
+Requires:	%{libmpathvalid} = %{EVRD}
 Provides:	device-mapper-multipath-devel = %{EVRD}
 Provides:	multipath-devel = %{EVRD}
 Provides:	%{name}-devel = %{EVRD}
@@ -120,7 +138,7 @@ cp %{SOURCE1} .
 
 %build
 %set_build_flags
-%make_build BUILD="glibc" OPTFLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_libdir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} -j1
+%make_build BUILD="glibc" RPM_OPT_FLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_libdir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} -j1
 
 %install
 %make_install \
@@ -157,14 +175,15 @@ rm -rf %{buildroot}/%{_initrddir}
 %doc README*
 %dir %{_sysconfdir}/multipath
 %ghost %config(noreplace) %{_sysconfdir}/multipath.conf
-%{_udevrulesdir}/*path.rules
-%{_udevrulesdir}/*part*.rules
+%config %{_udevrulesdir}//62-multipath.rules
+%config %{_udevrulesdir}//11-dm-mpath.rules
 %{_presetdir}/86-multipathd.preset
 %{_unitdir}/multipathd.service
 %{_unitdir}/multipathd.socket
-/sbin/multipath
-/sbin/multipathd
-/sbin/mpathpersist
+%{_sbindir}/multipath
+%{_sbindir}/mpathconf
+%{_sbindir}/multipathd
+%{_sbindir}/mpathpersist
 %dir %{_libdir}/multipath/
 %{_libdir}/multipath/*
 %{_mandir}/man?/*dmmp*
@@ -180,6 +199,9 @@ rm -rf %{buildroot}/%{_initrddir}
 %files -n %{libmpathcmd}
 %{_libdir}/libmpathcmd.so.%{major}*
 
+%files -n %{libmpathvalid}
+%{_libdir}/libmpathvalid.so.%{major}*
+
 %files -n %{libdmmp}
 %{_libdir}/libdmmp.so.%{major}*
 
@@ -187,8 +209,10 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_libdir}/libmpathpersist.so
 %{_libdir}/libmpathcmd.so
 %{_libdir}/libmultipath.so
+%{_libdir}/libmpathvalid.so
 %{_includedir}/mpath_cmd.h
 %{_includedir}/mpath_persist.h
+%{_includedir}/mpath_valid.h
 %{_mandir}/man3/mpath_persistent_reserve_in.3.*
 %{_mandir}/man3/mpath_persistent_reserve_out.3.*
 
@@ -201,7 +225,9 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_libdir}/pkgconfig/libdmmp.pc
 
 %files -n kpartx
-%{_udevrulesdir}/*kpartx.rules
-/sbin/kpartx
+%config %{_udevrulesdir}/11-dm-parts.rules
+%config %{_udevrulesdir}/66-kpartx.rules
+%config %{_udevrulesdir}/68-del-part-nodes.rules
+%{_sbindir}/kpartx
 /lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8*

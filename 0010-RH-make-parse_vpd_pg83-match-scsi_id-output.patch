@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Benjamin Marzinski <bmarzins@redhat.com>
+Date: Thu, 25 Mar 2021 13:05:10 -0500
+Subject: [PATCH] RH: make parse_vpd_pg83 match scsi_id output
+
+Red Hat sets ID_SERIAL based on the result of scsi_id, instead of using
+the result of sg_inq and 55-scsi-sg3_id.rules. Make parse_vpd_pg83 match
+that.
+
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ libmultipath/discovery.c | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
+
+diff --git a/libmultipath/discovery.c b/libmultipath/discovery.c
+index ec99a7aa..2704270e 100644
+--- a/libmultipath/discovery.c
++++ b/libmultipath/discovery.c
+@@ -1135,12 +1135,9 @@ parse_vpd_pg83(const unsigned char *in, size_t in_len,
+ 				naa_prio = 7;
+ 				break;
+ 			case 2:
+-				/* IEEE Extended: Prio 6 */
+-				naa_prio = 6;
+-				break;
+ 			case 3:
+-				/* IEEE Locally assigned: Prio 1 */
+-				naa_prio = 1;
++				/* IEEE Extended or Locally assigned: Prio 6 */
++				naa_prio = 6;
+ 				break;
+ 			default:
+ 				/* Default: no priority */
+@@ -1159,17 +1156,6 @@ parse_vpd_pg83(const unsigned char *in, size_t in_len,
+ 				vpd = d;
+ 			}
+ 			break;
+-		case 0x8:
+-			/* SCSI Name: Prio 3 */
+-			if (memcmp(d + 4, "eui.", 4) &&
+-			    memcmp(d + 4, "naa.", 4) &&
+-			    memcmp(d + 4, "iqn.", 4))
+-				break;
+-			if (prio < 3) {
+-				prio = 3;
+-				vpd = d;
+-			}
+-			break;
+ 		case 0x1:
+ 			/* T-10 Vendor ID: Prio 2 */
+ 			if (prio < 2) {
