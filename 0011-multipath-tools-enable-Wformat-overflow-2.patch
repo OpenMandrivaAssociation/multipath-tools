@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martin Wilck <mwilck@suse.com>
+Date: Mon, 17 May 2021 22:43:02 +0200
+Subject: [PATCH] multipath-tools: enable -Wformat-overflow=2
+
+Allow the compiler to catch possible format string overflows.
+Two were found by gcc 10.
+
+Reviewed-by: Benjamin Marzinski <bmarzins@redhat.com>
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ Makefile.inc             | 3 ++-
+ libmultipath/discovery.c | 2 +-
+ libmultipath/print.c     | 4 ++--
+ 3 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/Makefile.inc b/Makefile.inc
+index f1e23131..91100a20 100644
+--- a/Makefile.inc
++++ b/Makefile.inc
+@@ -95,9 +95,10 @@ TEST_CC_OPTION = $(shell \
+ STACKPROT := $(call TEST_CC_OPTION,-fstack-protector-strong,-fstack-protector)
+ ERROR_DISCARDED_QUALIFIERS := $(call TEST_CC_OPTION,-Werror=discarded-qualifiers,)
+ WNOCLOBBERED := $(call TEST_CC_OPTION,-Wno-clobbered -Wno-error=clobbered,)
++WFORMATOVERFLOW := $(call TEST_CC_OPTION,-Wformat-overflow=2,)
+ 
+ OPTFLAGS	:= -O2 -g $(STACKPROT) --param=ssp-buffer-size=4
+-WARNFLAGS	:= -Werror -Wall -Wextra -Wformat=2 -Werror=implicit-int \
++WARNFLAGS	:= -Werror -Wall -Wextra -Wformat=2 $(WFORMATOVERFLOW) -Werror=implicit-int \
+ 		  -Werror=implicit-function-declaration -Werror=format-security \
+ 		  $(WNOCLOBBERED) -Werror=cast-qual $(ERROR_DISCARDED_QUALIFIERS)
+ CPPFLAGS	:= -Wp,-D_FORTIFY_SOURCE=2 
+diff --git a/libmultipath/discovery.c b/libmultipath/discovery.c
+index ec99a7aa..bfe2f56c 100644
+--- a/libmultipath/discovery.c
++++ b/libmultipath/discovery.c
+@@ -635,7 +635,7 @@ sysfs_set_rport_tmo(struct multipath *mpp, struct path *pp)
+ {
+ 	struct udev_device *rport_dev = NULL;
+ 	char value[16], *eptr;
+-	char rport_id[32];
++	char rport_id[42];
+ 	unsigned int tmo;
+ 	int ret;
+ 
+diff --git a/libmultipath/print.c b/libmultipath/print.c
+index 8151e11e..3c69bf48 100644
+--- a/libmultipath/print.c
++++ b/libmultipath/print.c
+@@ -1,4 +1,4 @@
+-/*
++ /*
+  * Copyright (c) 2005 Christophe Varoqui
+  */
+ #include <stdio.h>
+@@ -594,7 +594,7 @@ int
+ snprint_tgt_wwpn (char * buff, size_t len, const struct path * pp)
+ {
+ 	struct udev_device *rport_dev = NULL;
+-	char rport_id[32];
++	char rport_id[42];
+ 	const char *value = NULL;
+ 	int ret;
+ 

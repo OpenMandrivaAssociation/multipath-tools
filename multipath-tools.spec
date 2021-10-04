@@ -15,22 +15,45 @@
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.8.6
-Release:	1
+Release:	2
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
 Source0:	https://github.com/opensvc/multipath-tools/archive/%{version}.tar.gz
 Source1:	multipath.conf
-Patch1:		0001-RH-fixup-udev-rules-for-redhat.patch
-Patch2:		0002-RH-Remove-the-property-blacklist-exception-builtin.patch
-Patch3:		0003-RH-don-t-start-without-a-config-file.patch
-Patch4:		0004-RH-Fix-nvme-function-missing-argument.patch
-Patch5:		0005-RH-use-rpm-optflags-if-present.patch
-Patch6:		0006-RH-add-mpathconf.patch
-Patch7:		0007-RH-add-wwids-from-kernel-cmdline-mpath.wwids-with-A.patch
-Patch8:		0008-RH-reset-default-find_mutipaths-value-to-off.patch
-Patch9:		0009-RH-attempt-to-get-ANA-info-via-sysfs-first.patch
-Patch10:	0010-RH-make-parse_vpd_pg83-match-scsi_id-output.patch
+Patch0001:	0001-libmultipath-fix-memory-leak-in-checker_cleanup_thre.patch
+Patch0002:	0002-multipathd-fix-compilation-issue-with-liburcu-0.8.patch
+Patch0003:	0003-multipathd-don-t-fail-to-remove-path-once-the-map-is.patch
+Patch0004:	0004-multipathd-remove-duplicate-orphan_paths-in-flush_ma.patch
+Patch0005:	0005-multipathd-fix-ev_remove_path-return-code-handling.patch
+Patch0006:	0006-multipath-free-vectors-in-configure.patch
+Patch0007:	0007-kpartx-Don-t-leak-memory-when-getblock-returns-NULL.patch
+Patch0008:	0008-multipathd-don-t-rescan_path-on-wwid-change-in-uev_u.patch
+Patch0009:	0009-multipathd-cli_handlers-cleanup-setting-reply-length.patch
+Patch0010:	0010-multipathd-cli_getprkey-fix-return-value.patch
+Patch0011:	0011-multipath-tools-enable-Wformat-overflow-2.patch
+Patch0012:	0012-libdmmp-use-KBUILD_BUILD_TIMESTAMP-when-building-man.patch
+Patch0013:	0013-multipath-tools-add-info-about-HPE-Alletra-6000-and-.patch
+Patch0014:	0014-multipathd-don-t-start-in-containers.patch
+Patch0015:	0015-libmultipath-fix-build-without-LIBDM_API_DEFERRED.patch
+Patch0016:	0016-libmultipath-use-uint64_t-for-sg_id.lun.patch
+Patch0017:	0017-multipath-tools-Remove-trailing-leading-whitespaces.patch
+Patch0018:	0018-multipath-tools-make-HUAWEI-XSG1-config-work-with-al.patch
+Patch0019:	0019-multipath.conf-fix-typo-in-ghost_delay-description.patch
+Patch0020:	0020-mpathpersist-fail-commands-when-no-usable-paths-exis.patch
+Patch0021:	0021-multipath-print-warning-if-multipathd-is-not-running.patch
+Patch0022:	0022-libmultipath-remove-unneeded-code-in-coalesce_paths.patch
+Patch0023:	0023-libmultipath-deal-with-dynamic-PTHREAD_STACK_MIN.patch
+Patch0024:	0024-RH-fixup-udev-rules-for-redhat.patch
+Patch0025:	0025-RH-Remove-the-property-blacklist-exception-builtin.patch
+Patch0026:	0026-RH-don-t-start-without-a-config-file.patch
+Patch0027:	0027-RH-Fix-nvme-function-missing-argument.patch
+Patch0028:	0028-RH-use-rpm-optflags-if-present.patch
+Patch0029:	0029-RH-add-mpathconf.patch
+Patch0030:	0030-RH-add-wwids-from-kernel-cmdline-mpath.wwids-with-A.patch
+Patch0031:	0031-RH-reset-default-find_mutipaths-value-to-off.patch
+Patch0032:	0032-RH-attempt-to-get-ANA-info-via-sysfs-first.patch
+Patch0033:	0033-RH-make-parse_vpd_pg83-match-scsi_id-output.patch
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
 BuildRequires:	pkgconfig(readline)
@@ -114,7 +137,6 @@ kpartx manages partition creation and removal for device-mapper devices.
 %package -n %{libdmmp}
 Summary:	device-mapper-multipath C API library
 Group:		System/Libraries
-#Requires: json-c
 Requires:	%{name} = %{EVRD}
 
 %description -n %{libdmmp}
@@ -138,7 +160,7 @@ cp %{SOURCE1} .
 
 %build
 %set_build_flags
-%make_build BUILD="glibc" RPM_OPT_FLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_libdir} CC=%{__cc} udevdir="/lib/udev" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} -j1
+%make_build BUILD="glibc" RPM_OPT_FLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_libdir} CC=%{__cc} udevdir="$(dirname %{_udevrulesdir})" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} SYSTEMD=%{systemd_ver} -j1
 
 %install
 %make_install \
@@ -186,9 +208,9 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_sbindir}/mpathpersist
 %dir %{_libdir}/multipath/
 %{_libdir}/multipath/*
-%{_mandir}/man?/*dmmp*
-%{_mandir}/man?/multipath*
-%{_mandir}/man?/mpath*
+%doc %{_mandir}/man?/*dmmp*
+%doc %{_mandir}/man?/multipath*
+%doc %{_mandir}/man?/mpath*
 
 %files -n %{libmultipath}
 %{_libdir}/libmultipath.so.%{major}{,.*}
@@ -213,15 +235,15 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_includedir}/mpath_cmd.h
 %{_includedir}/mpath_persist.h
 %{_includedir}/mpath_valid.h
-%{_mandir}/man3/mpath_persistent_reserve_in.3.*
-%{_mandir}/man3/mpath_persistent_reserve_out.3.*
+%doc %{_mandir}/man3/mpath_persistent_reserve_in.3.*
+%doc %{_mandir}/man3/mpath_persistent_reserve_out.3.*
 
 %files -n %{devdmmp}
 %{_libdir}/libdmmp.so
 %dir %{_includedir}/libdmmp
 %{_includedir}/libdmmp/*
-%{_mandir}/man3/dmmp_*
-%{_mandir}/man3/libdmmp.h.3.*
+%doc %{_mandir}/man3/dmmp_*
+%doc %{_mandir}/man3/libdmmp.h.3.*
 %{_libdir}/pkgconfig/libdmmp.pc
 
 %files -n kpartx
@@ -230,4 +252,4 @@ rm -rf %{buildroot}/%{_initrddir}
 %config %{_udevrulesdir}/68-del-part-nodes.rules
 %{_sbindir}/kpartx
 /lib/udev/kpartx_id
-%{_mandir}/man8/kpartx.8*
+%doc %{_mandir}/man8/kpartx.8*

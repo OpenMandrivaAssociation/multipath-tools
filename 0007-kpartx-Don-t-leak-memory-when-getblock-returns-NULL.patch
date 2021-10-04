@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Benjamin Marzinski <bmarzins@redhat.com>
+Date: Mon, 17 May 2021 11:29:58 -0500
+Subject: [PATCH] kpartx: Don't leak memory when getblock returns NULL
+
+If a new block was allocated, but couldn't be filled, getblock will
+discard it. When it does so, it needs to free the block to avoid leaking
+memory. Found by coverity.
+
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+Reviewed-by: Martin Wilck <mwilck@suse.com>
+---
+ kpartx/kpartx.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kpartx/kpartx.c b/kpartx/kpartx.c
+index 8ff116b8..7bc64543 100644
+--- a/kpartx/kpartx.c
++++ b/kpartx/kpartx.c
+@@ -766,6 +766,8 @@ getblock (int fd, unsigned int blknr) {
+ 	if (read(fd, bp->block, secsz) != secsz) {
+ 		fprintf(stderr, "read error, sector %d\n", secnr);
+ 		blockhead = bp->next;
++		free(bp->block);
++		free(bp);
+ 		return NULL;
+ 	}
+ 

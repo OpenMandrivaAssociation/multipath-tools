@@ -1,0 +1,63 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Xose Vazquez Perez <xose.vazquez@gmail.com>
+Date: Mon, 5 Apr 2021 00:12:58 +0200
+Subject: [PATCH] multipath-tools: make HUAWEI/XSG1 config work with alua and
+ multibus
+
+And add recommended no_path_retry and pgfailback values.
+
+Info from:
+- RHEL https://download.huawei.com/edownload/e/download.do?actionFlag=download&nid=EDOC1100113070&partNo=6001&mid=SUPE_DOC&_t=1612885511000
+- SLES https://download.huawei.com/edownload/e/download.do?actionFlag=download&nid=EDOC1100117892&partNo=6001&mid=SUPE_DOC&_t=1612885538000
+
+- without HyperMetro:
+vendor "HUAWEI"
+product "XSG1"
+path_grouping_policy multibus
+no_path_retry 15
+
+- with HyperMetro:
+vendor "HUAWEI"
+product "XSG1"
+path_grouping_policy group_by_prio
+prio alua
+failback immediate
+no_path_retry 15
+
+ALUA is only used with HyperMetro(cluster of two arrays).
+
+Suggested-by: Martin Wilck <mwilck@suse.com>
+Cc: Zhouweigang (Jack) <zhouweigang09@huawei.com>
+Cc: Zou Ming <zouming.zouming@huawei.com>
+Cc: Benjamin Marzinski <bmarzins@redhat.com>
+Cc: Martin Wilck <mwilck@suse.com>
+Cc: Christophe Varoqui <christophe.varoqui@opensvc.com>
+Cc: DM-DEVEL ML <dm-devel@redhat.com>
+Signed-off-by: Xose Vazquez Perez <xose.vazquez@gmail.com>
+Reviewed-by: Martin Wilck <mwilck@suse.com>"
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ libmultipath/hwtable.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/libmultipath/hwtable.c b/libmultipath/hwtable.c
+index e884d8c7..2a896440 100644
+--- a/libmultipath/hwtable.c
++++ b/libmultipath/hwtable.c
+@@ -1078,11 +1078,14 @@ static struct hwentry default_hw[] = {
+ 	 * Huawei
+ 	 */
+ 	{
+-		/* OceanStor V3 */
++		/* OceanStor V3-V6 */
++		// This config works with multibus and ALUA
++		// ALUA is required by HyperMetro
+ 		.vendor        = "HUAWEI",
+ 		.product       = "XSG1",
+ 		.pgpolicy      = GROUP_BY_PRIO,
+-		.prio_name     = PRIO_ALUA,
++		.pgfailback    = -FAILBACK_IMMEDIATE,
++		.no_path_retry = 15,
+ 	},
+ 	/*
+ 	 * Kove

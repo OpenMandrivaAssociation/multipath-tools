@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Benjamin Marzinski <bmarzins@redhat.com>
+Date: Fri, 16 Jul 2021 17:58:14 -0500
+Subject: [PATCH] libmultipath: remove unneeded code in coalesce_paths
+
+The code at the end of coalesce_paths() removes a multipath device that
+was just created/reloaded, if none of its path devices have pp->dev set.
+This code is very old, and no longer has any actual effect. Multipath
+devices no longer get placed in pathvec without having pp->dev set. Even
+if they could, there's no point in creating/reloading the device and
+then immediately removing it.
+
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ libmultipath/configure.c | 46 ----------------------------------------
+ 1 file changed, 46 deletions(-)
+
+diff --git a/libmultipath/configure.c b/libmultipath/configure.c
+index eb76fbc4..df6ba725 100644
+--- a/libmultipath/configure.c
++++ b/libmultipath/configure.c
+@@ -1061,28 +1061,6 @@ int domap(struct multipath *mpp, char *params, int is_daemon)
+ 	return DOMAP_FAIL;
+ }
+ 
+-static int
+-deadmap (struct multipath * mpp)
+-{
+-	int i, j;
+-	struct pathgroup * pgp;
+-	struct path * pp;
+-
+-	if (!mpp->pg)
+-		return 1;
+-
+-	vector_foreach_slot (mpp->pg, pgp, i) {
+-		if (!pgp->paths)
+-			continue;
+-
+-		vector_foreach_slot (pgp->paths, pp, j)
+-			if (strlen(pp->dev))
+-				return 0; /* alive */
+-	}
+-
+-	return 1; /* dead */
+-}
+-
+ extern int
+ check_daemon(void)
+ {
+@@ -1318,30 +1296,6 @@ int coalesce_paths (struct vectors *vecs, vector mpvec, char *refwwid,
+ 				   KEEP_VEC);
+ 		map_processed = true;
+ 	}
+-	/*
+-	 * Flush maps with only dead paths (ie not in sysfs)
+-	 * Keep maps with only failed paths
+-	 */
+-	if (mpvec) {
+-		vector_foreach_slot (newmp, mpp, i) {
+-			char alias[WWID_SIZE];
+-
+-			if (!deadmap(mpp))
+-				continue;
+-
+-			strlcpy(alias, mpp->alias, WWID_SIZE);
+-
+-			vector_del_slot(newmp, i);
+-			i--;
+-			remove_map(mpp, vecs->pathvec, vecs->mpvec, KEEP_VEC);
+-
+-			if (dm_flush_map(alias))
+-				condlog(2, "%s: remove failed (dead)",
+-					alias);
+-			else
+-				condlog(2, "%s: remove (dead)", alias);
+-		}
+-	}
+ 	if (map_processed && !is_daemon && (no_daemon || !check_daemon()))
+ 		condlog(2, "multipath devices exist, but multipathd service is not running");
+ 

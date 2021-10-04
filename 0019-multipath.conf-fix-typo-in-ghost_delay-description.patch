@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Benjamin Marzinski <bmarzins@redhat.com>
+Date: Thu, 15 Jul 2021 14:46:49 -0500
+Subject: [PATCH] multipath.conf: fix typo in ghost_delay description
+
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ multipath/multipath.conf.5 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/multipath/multipath.conf.5 b/multipath/multipath.conf.5
+index 064e4826..d6b8c7f6 100644
+--- a/multipath/multipath.conf.5
++++ b/multipath/multipath.conf.5
+@@ -1251,7 +1251,7 @@ The default is: in \fB/sys/block/<dev>/queue/max_sectors_kb\fR
+ Sets the number of seconds that multipath will wait after creating a device
+ with only ghost paths before marking it ready for use in systemd. This gives
+ the active paths time to appear before the multipath runs the hardware handler
+-to switch the ghost paths to active ones. Setting this to \fI0\fR or \fIon\fR
++to switch the ghost paths to active ones. Setting this to \fI0\fR or \fIno\fR
+ makes multipath immediately mark a device with only ghost paths as ready.
+ .RS
+ .TP

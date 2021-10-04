@@ -15,7 +15,7 @@ Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
  3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/Makefile.inc b/Makefile.inc
-index f1e23131..c593fd3b 100644
+index d0ec9b44..2a75dc9c 100644
 --- a/Makefile.inc
 +++ b/Makefile.inc
 @@ -55,7 +55,7 @@ endif

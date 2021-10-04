@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Benjamin Marzinski <bmarzins@redhat.com>
+Date: Mon, 17 May 2021 11:29:57 -0500
+Subject: [PATCH] multipath: free vectors in configure
+
+configure() can retry multiple times, each time reallocing a maps and
+paths vector, and leaking the previous ones. Fix this by always freeing
+the vectors before configure() exits. Found by coverity.
+
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+Reviewed-by: Martin Wilck <mwilck@suse.com>
+---
+ multipath/main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/multipath/main.c b/multipath/main.c
+index ef89c7cf..8fc0e15f 100644
+--- a/multipath/main.c
++++ b/multipath/main.c
+@@ -466,7 +466,6 @@ configure (struct config *conf, enum mpath_cmds cmd,
+ 	 */
+ 	curmp = vector_alloc();
+ 	pathvec = vector_alloc();
+-	atexit(cleanup_vecs);
+ 
+ 	if (!curmp || !pathvec) {
+ 		condlog(0, "can not allocate memory");
+@@ -578,6 +577,11 @@ out:
+ 	if (refwwid)
+ 		FREE(refwwid);
+ 
++	free_multipathvec(curmp, KEEP_PATHS);
++	vecs.mpvec = NULL;
++	free_pathvec(pathvec, FREE_PATHS);
++	vecs.pathvec = NULL;
++
+ 	return r;
+ }
+ 
+@@ -823,6 +827,7 @@ main (int argc, char *argv[])
+ 	conf = get_multipath_config();
+ 	conf->retrigger_tries = 0;
+ 	conf->force_sync = 1;
++	atexit(cleanup_vecs);
+ 	while ((arg = getopt(argc, argv, ":adDcChl::eFfM:v:p:b:BrR:itTquUwW")) != EOF ) {
+ 		switch(arg) {
+ 		case 1: printf("optarg : %s\n",optarg);

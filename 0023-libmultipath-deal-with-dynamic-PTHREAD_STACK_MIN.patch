@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Benjamin Marzinski <bmarzins@redhat.com>
+Date: Thu, 29 Jul 2021 13:16:57 -0500
+Subject: [PATCH] libmultipath: deal with dynamic PTHREAD_STACK_MIN
+
+Starting in glibc-2.34 (commit 5d98a7da), PTHREAD_STACK_MIN is defined
+as sysconf(_SC_THREAD_STACK_MIN) if _GNU_SOURCE is defined. sysconf()
+returns a long and can, at least in theory, return -1.  This change
+causes compilation to fail in setup_thread_attr() due to a comparision
+with different signedness, since stacksize is a size_t.
+
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ libmultipath/util.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libmultipath/util.c b/libmultipath/util.c
+index 0e37f3ff..17f8fcc6 100644
+--- a/libmultipath/util.c
++++ b/libmultipath/util.c
+@@ -223,8 +223,8 @@ setup_thread_attr(pthread_attr_t *attr, size_t stacksize, int detached)
+ 
+ 	ret = pthread_attr_init(attr);
+ 	assert(ret == 0);
+-	if (stacksize < PTHREAD_STACK_MIN)
+-		stacksize = PTHREAD_STACK_MIN;
++	if (PTHREAD_STACK_MIN > 0 && stacksize < (size_t)PTHREAD_STACK_MIN)
++		stacksize = (size_t)PTHREAD_STACK_MIN;
+ 	ret = pthread_attr_setstacksize(attr, stacksize);
+ 	assert(ret == 0);
+ 	if (detached) {

@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Benjamin Marzinski <bmarzins@redhat.com>
+Date: Mon, 17 May 2021 11:29:59 -0500
+Subject: [PATCH] multipathd: don't rescan_path on wwid change in
+ uev_update_path
+
+If get_uid() is returning a different wwid in uev_update_path(), then
+the uid_attribute must have already gotten updated, which was the
+purpose behind calling rescan_path() in the first place.
+
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+Reviewed-by: Martin Wilck <mwilck@suse.com>
+---
+ multipathd/main.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/multipathd/main.c b/multipathd/main.c
+index 26a4e44e..2251e02c 100644
+--- a/multipathd/main.c
++++ b/multipathd/main.c
+@@ -1359,7 +1359,6 @@ uev_update_path (struct uevent *uev, struct vectors * vecs)
+ 			condlog(0, "%s: path wwid changed from '%s' to '%s'",
+ 				uev->kernel, wwid, pp->wwid);
+ 			ev_remove_path(pp, vecs, 1);
+-			rescan_path(uev->udev);
+ 			needs_reinit = 1;
+ 			goto out;
+ 		} else {

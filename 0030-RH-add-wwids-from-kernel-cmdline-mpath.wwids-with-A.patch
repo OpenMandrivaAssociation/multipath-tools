@@ -20,7 +20,7 @@ Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
  3 files changed, 59 insertions(+), 3 deletions(-)
 
 diff --git a/multipath/main.c b/multipath/main.c
-index ef89c7cf..f618550d 100644
+index 33377147..85e4481d 100644
 --- a/multipath/main.c
 +++ b/multipath/main.c
 @@ -122,7 +122,7 @@ usage (char * progname)
@@ -41,7 +41,7 @@ index ef89c7cf..f618550d 100644
  		"  -c      check if a device should be a path in a multipath device\n"
  		"  -C      check if a multipath device has usable paths\n"
  		"  -q      allow queue_if_no_path when multipathd is not running\n"
-@@ -450,6 +452,50 @@ static void cleanup_vecs(void)
+@@ -455,6 +457,50 @@ static void cleanup_vecs(void)
  	free_pathvec(vecs.pathvec, FREE_PATHS);
  }
  
@@ -92,16 +92,16 @@ index ef89c7cf..f618550d 100644
  static int
  configure (struct config *conf, enum mpath_cmds cmd,
  	   enum devtypes dev_type, char *devpath)
-@@ -823,7 +869,7 @@ main (int argc, char *argv[])
- 	conf = get_multipath_config();
+@@ -833,7 +879,7 @@ main (int argc, char *argv[])
  	conf->retrigger_tries = 0;
  	conf->force_sync = 1;
+ 	atexit(cleanup_vecs);
 -	while ((arg = getopt(argc, argv, ":adDcChl::eFfM:v:p:b:BrR:itTquUwW")) != EOF ) {
 +	while ((arg = getopt(argc, argv, ":aAdDcChl::eFfM:v:p:b:BrR:itTquUwW")) != EOF ) {
  		switch(arg) {
  		case 1: printf("optarg : %s\n",optarg);
  			break;
-@@ -900,6 +946,10 @@ main (int argc, char *argv[])
+@@ -910,6 +956,10 @@ main (int argc, char *argv[])
  		case 'T':
  			cmd = CMD_DUMP_CONFIG;
  			break;
@@ -113,7 +113,7 @@ index ef89c7cf..f618550d 100644
  			usage(argv[0]);
  			exit(RTVL_OK);
 diff --git a/multipath/multipath.8 b/multipath/multipath.8
-index 5b29a5d9..0478f4e7 100644
+index 17df59f5..5ca75359 100644
 --- a/multipath/multipath.8
 +++ b/multipath/multipath.8
 @@ -63,7 +63,7 @@ multipath \- Device mapper target autoconfig.
@@ -138,10 +138,10 @@ index 5b29a5d9..0478f4e7 100644
  Remove the WWID for the specified device from the WWIDs file.
  .
 diff --git a/multipathd/multipathd.service b/multipathd/multipathd.service
-index af592057..bc8fa07a 100644
+index 6d57c7e8..dfc1e962 100644
 --- a/multipathd/multipathd.service
 +++ b/multipathd/multipathd.service
-@@ -15,6 +15,7 @@ Type=notify
+@@ -16,6 +16,7 @@ Type=notify
  NotifyAccess=main
  LimitCORE=infinity
  ExecStartPre=-/sbin/modprobe -a scsi_dh_alua scsi_dh_emc scsi_dh_rdac dm-multipath

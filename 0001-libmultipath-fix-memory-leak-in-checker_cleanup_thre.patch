@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: lixiaokeng <lixiaokeng@huawei.com>
+Date: Fri, 9 Apr 2021 15:15:05 +0800
+Subject: [PATCH] libmultipath: fix memory leak in checker_cleanup_thread
+
+If checker_cleanup_thread is called after cleanup_checkers,
+the checker_class will not be freed.
+
+Here, we use free_checker_class instead of checker_class_unref
+in checker_cleanup_thread.
+
+Signed-off-by: Lixiaokeng <lixiaokeng@huawei.com>
+Reviewed-by: Benjamin Marzinski <bmarzins@redhat.com>
+Reviewed-by: Martin Wilck <mwilck@suse.com>
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ libmultipath/checkers.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libmultipath/checkers.c b/libmultipath/checkers.c
+index 2dd9915d..8039c2bf 100644
+--- a/libmultipath/checkers.c
++++ b/libmultipath/checkers.c
+@@ -368,7 +368,7 @@ static void checker_cleanup_thread(void *arg)
+ {
+ 	struct checker_class *cls = arg;
+ 
+-	(void)checker_class_unref(cls);
++	free_checker_class(cls);
+ 	rcu_unregister_thread();
+ }
+ 

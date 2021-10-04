@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Utkarsh Gupta <utkarsh.gupta@canonical.com>
+Date: Mon, 7 Jun 2021 20:08:24 +0530
+Subject: [PATCH] multipathd: don't start in containers
+
+Do not attempt to start multipath-tools in containers,
+should switch for on-demand udev/socket based
+activation in the future.
+
+Originally reported as:
+https://bugs.launchpad.net/ubuntu/+source/multipath-tools/+bug/1823093
+
+Author: Dimitri John Ledkov <xnox@ubuntu.com>
+Co-Author: Utkarsh Gupta <utkarsh@debian.org>
+Reviewed-by: Martin Wilck <mwilck@suse.com>
+Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
+---
+ multipathd/multipathd.service | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/multipathd/multipathd.service b/multipathd/multipathd.service
+index 7d547fa7..0b2ac814 100644
+--- a/multipathd/multipathd.service
++++ b/multipathd/multipathd.service
+@@ -8,6 +8,7 @@ DefaultDependencies=no
+ Conflicts=shutdown.target
+ ConditionKernelCommandLine=!nompath
+ ConditionKernelCommandLine=!multipath=off
++ConditionVirtualization=!container
+ 
+ [Service]
+ Type=notify
