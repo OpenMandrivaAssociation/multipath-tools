@@ -15,7 +15,7 @@
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
 Version:	0.8.6
-Release:	2
+Release:	3
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
@@ -167,7 +167,7 @@ cp %{SOURCE1} .
 	syslibdir=%{_libdir} \
 	usrlibdir=%{_libdir} \
 	libdir=%{_libdir}/multipath \
-	libudevdir="/lib/udev" \
+	libudevdir="$(dirname %{_udevrulesdir})" \
 	udevrulesdir="%{_udevrulesdir}" \
 	unitdir=%{_unitdir} \
 	includedir=%{_includedir} \
@@ -251,5 +251,5 @@ rm -rf %{buildroot}/%{_initrddir}
 %config %{_udevrulesdir}/66-kpartx.rules
 %config %{_udevrulesdir}/68-del-part-nodes.rules
 %{_sbindir}/kpartx
-/lib/udev/kpartx_id
+%(dirname %{_udevrulesdir})/kpartx_id
 %doc %{_mandir}/man8/kpartx.8*

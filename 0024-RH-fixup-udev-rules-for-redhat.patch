@@ -23,7 +23,7 @@ index d0ec9b44..2a75dc9c 100644
  exec_prefix	= $(prefix)
  usr_prefix	= $(prefix)
 -bindir		= $(exec_prefix)/sbin
-+bindir		= $(exec_prefix)/usr/sbin
++bindir		= $(exec_prefix)/usr/bin
  libudevdir	= $(prefix)/$(SYSTEMDPATH)/udev
  udevrulesdir	= $(libudevdir)/rules.d
  multipathdir	= $(TOPDIR)/libmultipath
