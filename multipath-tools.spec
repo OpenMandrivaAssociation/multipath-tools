@@ -1,9 +1,14 @@
 %define major 0
-%define libmultipath %mklibname multipath %{major}
-%define libmpathpersist %mklibname mpathpersist %{major}
-%define libmpathcmd %mklibname mpathcmd %{major}
-%define libmpathvalid %mklibname mpathvalid %{major}
-%define libdmmp %mklibname dmmp 0
+%define oldlibmultipath %mklibname multipath 0
+%define oldlibmpathpersist %mklibname mpathpersist 0
+%define oldlibmpathcmd %mklibname mpathcmd 0
+%define oldlibmpathvalid %mklibname mpathvalid 0
+%define oldlibdmmp %mklibname dmmp 0
+%define libmultipath %mklibname multipath
+%define libmpathpersist %mklibname mpathpersist
+%define libmpathcmd %mklibname mpathcmd
+%define libmpathvalid %mklibname mpathvalid
+%define libdmmp %mklibname dmmp
 %define devname %mklibname multipath-tools -d
 %define devdmmp %mklibname dmmp -d
 
@@ -12,13 +17,16 @@
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
 %define systemd_ver %(pkg-config --modversion systemd 2> /dev/null)
 
+# configure scripts are broken and fail to detect lld 17 symbol versioning
+%global build_ldflags %{build_ldflags} -Wl,--undefined-version
+
 # multipath-tools sets _FORTIFY_SOURCE itself
 %undefine _fortify_cflags
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
-Version:	0.9.3
-Release:	2
+Version:	0.9.6
+Release:	1
 License:	GPLv2
 Group:		System/Kernel and hardware
 Url:		http://christophe.varoqui.free.fr/
@@ -56,6 +64,7 @@ are:
 Summary:	libmultipath library
 Group:		System/Libraries
 Conflicts:	multipath-tools < 0.4.9-1.20121222.1
+%rename %{oldlibmultipath}
 
 %description -n %{libmultipath}
 This package ships the libmultipath library, part of multipath-tools.
@@ -64,6 +73,7 @@ This package ships the libmultipath library, part of multipath-tools.
 Summary:	libmpathpersist library
 Group:		System/Libraries
 Conflicts:	multipath-tools < 0.4.9-1.20121222.1
+%rename %{oldlibmpathpersist}
 
 %description -n %{libmpathpersist}
 This package ships the libmpathpersist library, part of multipath-tools.
@@ -71,6 +81,7 @@ This package ships the libmpathpersist library, part of multipath-tools.
 %package -n %{libmpathcmd}
 Summary:	libmpathcmd library
 Group:		System/Libraries
+%rename %{oldlibmpathcmd}
 
 %description -n %{libmpathcmd}
 This package ships the libmpathcmd library, part of multipath-tools.
@@ -78,6 +89,7 @@ This package ships the libmpathcmd library, part of multipath-tools.
 %package -n %{libmpathvalid}
 Summary:	libmpathvalid library
 Group:		System/Libraries
+%rename %{oldlibmpathvalid}
 
 %description -n %{libmpathvalid}
 This package ships the libmpathvalid library, part of multipath-tools.
@@ -110,6 +122,7 @@ kpartx manages partition creation and removal for device-mapper devices.
 Summary:	device-mapper-multipath C API library
 Group:		System/Libraries
 Requires:	%{name} = %{EVRD}
+%rename %{oldlibdmmp}
 
 %description -n %{libdmmp}
 This package contains the shared library for the device-mapper-multipath
@@ -132,10 +145,25 @@ cp %{SOURCE1} .
 
 %build
 %set_build_flags
-%make_build BUILD="glibc" RPM_OPT_FLAGS="%{optflags} -Wno-strict-aliasing" LIB=%{_libdir} CC=%{__cc} udevdir="$(dirname %{_udevrulesdir})" udevrulesdir="%{_udevrulesdir}" unitdir=%{_unitdir} bindir=%{_sbindir} man3dir=%{_mandir}/man3 man5dir=%{_mandir}/man5 man8dir=%{_mandir}/man8 SYSTEMD=%{systemd_ver} -j1
+%make_build \
+	BUILD="glibc" \
+	RPM_OPT_FLAGS="%{optflags} -Wno-strict-aliasing" \
+	LIB=%{_libdir} \
+	CC="%{__cc}" \
+	prefix=%{_prefix} \
+	udevdir="$(dirname %{_udevrulesdir})" \
+	udevrulesdir="%{_udevrulesdir}" \
+	unitdir=%{_unitdir} \
+	bindir=%{_sbindir} \
+	man3dir=%{_mandir}/man3 \
+	man5dir=%{_mandir}/man5 \
+	man8dir=%{_mandir}/man8 \
+	SYSTEMD=%{systemd_ver} \
+	-j1
 
 %install
 %make_install \
+	prefix=%{_prefix} \
 	syslibdir=%{_libdir} \
 	usrlibdir=%{_libdir} \
 	libdir=%{_libdir}/multipath \
