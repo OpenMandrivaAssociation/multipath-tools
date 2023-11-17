@@ -40,6 +40,7 @@ BuildRequires:	pkgconfig(devmapper)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(json-c)
 BuildRequires:	pkgconfig(libsystemd)
+BuildRequires:	pkgconfig(mount)
 BuildRequires:	systemd
 
 Requires:	dmsetup
