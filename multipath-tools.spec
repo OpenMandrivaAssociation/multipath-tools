@@ -15,7 +15,7 @@
 %define _disable_ld_no_undefined 1
 %define _disable_lto 1
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}devel\\(libmpathcmd
-%define systemd_ver %(pkg-config --modversion systemd 2> /dev/null)
+%define systemd_ver %(rpm -q --qf '%%{version}' systemd 2> /dev/null |cut -d. -f1)
 
 # configure scripts are broken and fail to detect lld 17 symbol versioning
 %global build_ldflags %{build_ldflags} -Wl,--undefined-version
