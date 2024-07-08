@@ -25,7 +25,7 @@
 
 Summary:	Tools to manage multipathed devices with the device-mapper
 Name:		multipath-tools
-Version:	0.9.6
+Version:	0.9.9
 Release:	1
 License:	GPLv2
 Group:		System/Kernel and hardware
@@ -202,8 +202,9 @@ rm -rf %{buildroot}/%{_initrddir}
 %doc README*
 %dir %{_sysconfdir}/multipath
 %ghost %config(noreplace) %{_sysconfdir}/multipath.conf
-%config %{_udevrulesdir}//56-multipath.rules
-%config %{_udevrulesdir}//11-dm-mpath.rules
+%config %{_udevrulesdir}/56-multipath.rules
+%config %{_udevrulesdir}/11-dm-mpath.rules
+%config %{_udevrulesdir}/99-z-dm-mpath-late.rules
 %{_presetdir}/86-multipathd.preset
 %{_unitdir}/multipathd.service
 %{_unitdir}/multipathd.socket
@@ -213,7 +214,6 @@ rm -rf %{buildroot}/%{_initrddir}
 %{_sbindir}/mpathpersist
 %dir %{_libdir}/multipath/
 %{_libdir}/multipath/*
-%{_prefix}/lib/modules-load.d/multipath.conf
 %{_prefix}/lib/tmpfiles.d/multipath.conf
 %{_mandir}/man5/*
 %{_mandir}/man8/m*
