@@ -29,7 +29,7 @@ Version:	0.10.0
 Release:	1
 License:	GPLv2
 Group:		System/Kernel and hardware
-Url:		http://christophe.varoqui.free.fr/
+Url:		https://christophe.varoqui.free.fr/
 Source0:	https://github.com/opensvc/multipath-tools/archive/%{version}.tar.gz
 Source1:	multipath.conf
 BuildRequires:	libaio-devel
