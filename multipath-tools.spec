@@ -32,6 +32,7 @@ Group:		System/Kernel and hardware
 Url:		https://christophe.varoqui.free.fr/
 Source0:	https://github.com/opensvc/multipath-tools/archive/%{version}.tar.gz
 Source1:	multipath.conf
+BuildRequires:	make
 BuildRequires:	libaio-devel
 BuildRequires:	sysfsutils-devel
 BuildRequires:	pkgconfig(readline)
