@@ -160,6 +160,8 @@ cp %{SOURCE1} .
 	man3dir=%{_mandir}/man3 \
 	man5dir=%{_mandir}/man5 \
 	man8dir=%{_mandir}/man8 \
+	etc_prefix=/ \
+	statedir=%{_sysconfdir}/multipath \
 	SYSTEMD=%{systemd_ver} \
 	-j1
 
@@ -177,7 +179,9 @@ cp %{SOURCE1} .
 	bindir=%{_sbindir} \
 	man3dir=%{_mandir}/man3 \
 	man5dir=%{_mandir}/man5 \
-	man8dir=%{_mandir}/man8
+	man8dir=%{_mandir}/man8 \
+	etc_prefix=/ \
+	statedir=%{_sysconfdir}/multipath
 
 rm -rf %{buildroot}%{_sysconfig}/hotplug.d
 
@@ -208,6 +212,7 @@ rm -rf %{buildroot}/%{_initrddir}
 %config %{_udevrulesdir}/99-z-dm-mpath-late.rules
 %{_presetdir}/86-multipathd.preset
 %{_unitdir}/multipathd.service
+%{_unitdir}/multipathd-queueing.service
 %{_unitdir}/multipathd.socket
 %{_sbindir}/multipath
 %{_sbindir}/multipathc
